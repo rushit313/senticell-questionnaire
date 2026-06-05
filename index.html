@@ -699,14 +699,8 @@
     <a class="nav-item" href="#sec3" onclick="scrollTo('sec3')">
       <span class="nav-dot">3</span> Photos & assets
     </a>
-    <a class="nav-item" href="#sec4" onclick="scrollTo('sec4')">
-      <span class="nav-dot">4</span> Layout preferences
-    </a>
-    <a class="nav-item" href="#sec5" onclick="scrollTo('sec5')">
-      <span class="nav-dot">5</span> Page copy
-    </a>
     <a class="nav-item" href="#sec6" onclick="scrollTo('sec6')">
-      <span class="nav-dot">6</span> Timeline & contact
+      <span class="nav-dot">4</span> Timeline & contact
     </a>
   </nav>
 
@@ -900,80 +894,10 @@
       </div>
     </div>
 
-    <!-- Section 4: Layout -->
-    <div class="form-section" id="sec4">
-      <div class="section-head" onclick="toggleSection(this)">
-        <div class="section-num">4</div>
-        <div class="section-info">
-          <div class="section-title">Layout & display preferences</div>
-          <div class="section-desc">How the team page should look and behave</div>
-        </div>
-        <span class="section-chevron">&#8964;</span>
-      </div>
-      <div class="section-body">
-        <div class="grid-2">
-          <div class="field">
-            <label>Cards per row on desktop</label>
-            <select id="cardsPerRow">
-              <option value="">— Select —</option>
-              <option>2 per row</option>
-              <option>3 per row</option>
-              <option>4 per row</option>
-              <option>No preference</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Social links on each card?</label>
-            <select id="socialLinks">
-              <option value="">— Select —</option>
-              <option>LinkedIn only</option>
-              <option>LinkedIn + Twitter/X</option>
-              <option>All available socials</option>
-              <option>No social links</option>
-            </select>
-          </div>
-        </div>
-        <div class="field">
-          <label>Should clicking a card open a full bio popup?</label>
-          <div class="radio-group" id="bioPopupGroup">
-            <label class="radio-item" onclick="selectRadio(this, 'bioPopupGroup')"><input type="radio" name="bioPopup"><span class="radio-dot"></span><span class="radio-text">Yes — show full bio in a modal/popup when clicked</span></label>
-            <label class="radio-item" onclick="selectRadio(this, 'bioPopupGroup')"><input type="radio" name="bioPopup"><span class="radio-dot"></span><span class="radio-text">No — show short bio on the card only</span></label>
-            <label class="radio-item" onclick="selectRadio(this, 'bioPopupGroup')"><input type="radio" name="bioPopup"><span class="radio-dot"></span><span class="radio-text">No preference</span></label>
-          </div>
-        </div>
-        <div class="field">
-          <label>Layout references or inspiration <span class="hint">Any team pages you like?</span></label>
-          <textarea id="layoutNotes" placeholder="e.g. We like how [website.com] presents their team. Advisors should appear slightly smaller than core team..."></textarea>
-        </div>
-      </div>
-    </div>
-
-    <!-- Section 5: Page Copy -->
-    <div class="form-section" id="sec5">
-      <div class="section-head" onclick="toggleSection(this)">
-        <div class="section-num">5</div>
-        <div class="section-info">
-          <div class="section-title">Page-level copy</div>
-          <div class="section-desc">Headline and intro text for the page</div>
-        </div>
-        <span class="section-chevron">&#8964;</span>
-      </div>
-      <div class="section-body">
-        <div class="field">
-          <label>Page headline <span class="req">*</span> <span class="hint">Default is "Our Team"</span></label>
-          <input type="text" id="pageHeadline" placeholder="Our Team">
-        </div>
-        <div class="field">
-          <label>Intro paragraph <span class="hint">Optional short text under the headline</span></label>
-          <textarea id="pageIntro" placeholder="e.g. We are scientists, clinicians, and builders united by a belief that the future of medicine starts with earlier detection..."></textarea>
-        </div>
-      </div>
-    </div>
-
-    <!-- Section 6: Timeline -->
+    <!-- Section 4: Timeline -->
     <div class="form-section" id="sec6">
       <div class="section-head" onclick="toggleSection(this)">
-        <div class="section-num">6</div>
+        <div class="section-num">4</div>
         <div class="section-info">
           <div class="section-title">Timeline & contact</div>
           <div class="section-desc">Deadlines and who to reach for this page</div>
@@ -1232,25 +1156,7 @@
     if (pn) out += '  Notes: ' + pn + '\n';
 
     // Section 4
-    out += '\n━━ 4. LAYOUT PREFERENCES ━━\n\n';
-    const cr = document.getElementById('cardsPerRow').value;
-    const sl = document.getElementById('socialLinks').value;
-    const bp = document.querySelector('[name="bioPopup"]:checked');
-    const ln = document.getElementById('layoutNotes').value;
-    if (cr) out += '  Cards per row: ' + cr + '\n';
-    if (sl) out += '  Social links: ' + sl + '\n';
-    if (bp) out += '  Bio popup: ' + bp.closest('.radio-item').querySelector('.radio-text').textContent + '\n';
-    if (ln) out += '  Notes: ' + ln + '\n';
-
-    // Section 5
-    out += '\n━━ 5. PAGE COPY ━━\n\n';
-    const ph = document.getElementById('pageHeadline').value;
-    const pi = document.getElementById('pageIntro').value;
-    if (ph) out += '  Headline: ' + ph + '\n';
-    if (pi) out += '  Intro paragraph:\n  ' + pi.replace(/\n/g, '\n  ') + '\n';
-
-    // Section 6
-    out += '\n━━ 6. TIMELINE & CONTACT ━━\n\n';
+    out += '\n━━ 4. TIMELINE & CONTACT ━━\n\n';
     const dl = document.getElementById('deadline').value;
     const gl = document.getElementById('golive').value;
     const pname = document.getElementById('pocName').value;
@@ -1346,7 +1252,7 @@
   }
 
   // Scroll spy
-  const sections = ['sec1','sec2','sec3','sec4','sec5','sec6'];
+  const sections = ['sec1','sec2','sec3','sec6'];
   window.addEventListener('scroll', () => {
     let current = 'sec1';
     sections.forEach(id => {
