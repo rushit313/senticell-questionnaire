@@ -1217,6 +1217,8 @@
   }
 
   // ── History ───────────────────────────────────────────────────
+  const submissionsCache = new Map();
+
   async function loadHistory() {
     const container = document.getElementById('historyContainer');
     const subtitle  = document.getElementById('historySubtitle');
@@ -1227,42 +1229,106 @@
     const isAdmin = ADMIN_EMAILS.includes(currentUser.email);
     subtitle.textContent = isAdmin ? 'All submissions (admin view)' : 'Your submissions';
     container.innerHTML  = '<p style="color:var(--ink-3);font-size:14px;">Loading…</p>';
-
     try {
       let q = db.collection('submissions').orderBy('submittedAt', 'desc');
       if (!isAdmin) q = q.where('userId', '==', currentUser.uid);
       const snap = await q.get();
-
       if (snap.empty) {
         container.innerHTML = '<p style="color:var(--ink-3);font-size:14px;padding:0.5rem 0;">No submissions yet.</p>';
         return;
       }
       container.innerHTML = '';
+      submissionsCache.clear();
       snap.forEach(doc => {
-        const d    = doc.data();
-        const date = d.submittedAt?.toDate
-          ? d.submittedAt.toDate().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
-          : 'Unknown date';
-        const initials = (d.email || '?').slice(0,2).toUpperCase();
-        const card = document.createElement('div');
-        card.className = 'submission-card';
-        card.innerHTML = `
-          <div class="submission-head" onclick="this.nextElementSibling.classList.toggle('open')">
-            <div class="submission-avatar">${initials}</div>
-            <div class="submission-info">
-              <div class="submission-by">${d.pocName || d.email}</div>
-              <div class="submission-meta">${d.email} · ${date}</div>
-            </div>
-            <span style="color:var(--ink-3);font-size:18px;line-height:1;">&#8964;</span>
-          </div>
-          <div class="submission-body">
-            <textarea class="submission-text" readonly>${d.summary || ''}</textarea>
-          </div>`;
-        container.appendChild(card);
+        submissionsCache.set(doc.id, doc.data());
+        container.appendChild(buildSubmissionCard(doc.id, doc.data()));
       });
     } catch(err) {
-      container.innerHTML = '<p style="color:var(--danger);font-size:14px;">Error loading history: ' + err.message + '</p>';
+      container.innerHTML = '<p style="color:var(--danger);font-size:14px;">Error: ' + err.message + '</p>';
     }
+  }
+
+  function buildSubmissionCard(docId, d) {
+    const date = d.submittedAt?.toDate
+      ? d.submittedAt.toDate().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+      : 'Unknown date';
+    const initials = (d.email || '?').slice(0,2).toUpperCase();
+    const sd = d.structuredData || {};
+
+    // Members block
+    let membersHtml = '';
+    if (sd.members?.length) {
+      const rows = sd.members.map(m => {
+        const isUrl = m.photo && (m.photo.startsWith('http://') || m.photo.startsWith('https://'));
+        const photoEl = isUrl
+          ? `<img src="${m.photo}" alt="" style="width:46px;height:46px;border-radius:50%;object-fit:cover;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.12);" onerror="this.style.display='none'">`
+          : `<div style="width:46px;height:46px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:600;flex-shrink:0;">${(m.name||'?').charAt(0).toUpperCase()}</div>`;
+        return `<div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);">
+          ${photoEl}
+          <div style="min-width:0;flex:1;">
+            <div style="font-size:14px;font-weight:500;color:var(--ink);">${m.name||'—'}</div>
+            <div style="font-size:12px;color:var(--ink-3);margin-top:1px;">${[m.title,m.category].filter(Boolean).join(' · ')}</div>
+            ${m.shortBio ? `<div style="font-size:12px;color:var(--ink-2);margin-top:4px;line-height:1.5;">${m.shortBio}</div>` : ''}
+            ${m.linkedin ? `<a href="${m.linkedin}" target="_blank" rel="noopener" style="font-size:11px;color:var(--accent);text-decoration:none;margin-top:3px;display:inline-block;">LinkedIn ↗</a>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+      membersHtml = `<div style="margin-bottom:1.25rem;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;">Team members (${sd.members.length})</div>
+        ${rows}
+      </div>`;
+    }
+
+    // Details table
+    const metaRows = [
+      sd.categories?.length  && ['Categories',       sd.categories.join(', ')],
+      sd.photoDelivery       && ['Photo delivery',   sd.photoDelivery],
+      sd.photoStyle          && ['Photo style',      sd.photoStyle],
+      sd.deadline            && ['Content deadline', sd.deadline],
+      sd.golive              && ['Go-live date',     sd.golive],
+      sd.pocEmail            && ['Contact email',    sd.pocEmail],
+      sd.otherNotes          && ['Notes',            sd.otherNotes],
+    ].filter(Boolean);
+    const metaHtml = metaRows.length ? `<div style="margin-bottom:1.25rem;">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;">Details</div>
+      <table style="width:100%;border-collapse:collapse;">${metaRows.map(([l,v]) =>
+        `<tr><td style="font-size:12px;color:var(--ink-3);padding:4px 12px 4px 0;white-space:nowrap;vertical-align:top;">${l}</td>
+             <td style="font-size:13px;color:var(--ink-2);padding:4px 0;">${v}</td></tr>`).join('')}
+      </table></div>` : '';
+
+    // Fallback: raw text if no structuredData yet
+    const bodyContent = (membersHtml || metaHtml)
+      ? membersHtml + metaHtml
+      : `<textarea class="submission-text" readonly>${d.summary || ''}</textarea>`;
+
+    const card = document.createElement('div');
+    card.className = 'submission-card';
+    card.innerHTML = `
+      <div class="submission-head" onclick="this.nextElementSibling.classList.toggle('open')">
+        <div class="submission-avatar">${initials}</div>
+        <div class="submission-info">
+          <div class="submission-by">${d.pocName || d.email}</div>
+          <div class="submission-meta">${d.email} · ${date}</div>
+        </div>
+        <span style="color:var(--ink-3);font-size:18px;line-height:1;">&#8964;</span>
+      </div>
+      <div class="submission-body">
+        ${bodyContent}
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+          <button class="btn-primary" style="font-size:13px;padding:9px 18px;" onclick="loadSubmissionIntoForm('${docId}')">✎ Re-open in form</button>
+          <button class="btn-secondary" style="font-size:13px;padding:9px 18px;" onclick="copyTextById('${docId}')">Copy summary</button>
+        </div>
+      </div>`;
+    return card;
+  }
+
+  function copyTextById(docId) {
+    const text = submissionsCache.get(docId)?.summary || '';
+    navigator.clipboard?.writeText(text).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    });
   }
 
   let memberCount = 0;
@@ -1490,6 +1556,112 @@
     document.getElementById('outputBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  function captureFormData() {
+    const categories = [];
+    document.querySelectorAll('#catList .tab-rename').forEach(row => {
+      const check = row.querySelector('.check-item');
+      if (check?.classList.contains('checked')) {
+        const renameInput = row.querySelector('input[type="text"]');
+        categories.push(renameInput?.value || check.querySelector('.check-label')?.textContent || '');
+      }
+    });
+    const members = [];
+    document.querySelectorAll('.member-card').forEach(card => {
+      const id = card.id.replace('member-', '');
+      const g = s => document.getElementById('m' + id + s)?.value || '';
+      members.push({ name: g('-name'), title: g('-title'), category: g('-cat'), order: g('-order'),
+        shortBio: g('-shortbio'), fullBio: g('-fullbio'), linkedin: g('-linkedin'), twitter: g('-twitter'), photo: g('-photo') });
+    });
+    const bulkRaw = document.getElementById('bulkPhotoUrls')?.value || '';
+    return {
+      categories,
+      tabOrder:      document.getElementById('tabOrder')?.value || '',
+      members,
+      photoDelivery: document.getElementById('photoDelivery')?.value || '',
+      photoCrop:     document.getElementById('photoCrop')?.value || '',
+      photoLink:     document.getElementById('photoLink')?.value || '',
+      photoStyle:    document.querySelector('[name="photoStyle"]:checked')?.closest('.radio-item')?.querySelector('.radio-text')?.textContent || '',
+      photoNotes:    document.getElementById('photoNotes')?.value || '',
+      bulkPhotos:    bulkRaw ? bulkRaw.split(',').filter(Boolean) : [],
+      deadline:      document.getElementById('deadline')?.value || '',
+      golive:        document.getElementById('golive')?.value || '',
+      pocName:       document.getElementById('pocName')?.value || '',
+      pocEmail:      document.getElementById('pocEmail')?.value || '',
+      otherNotes:    document.getElementById('otherNotes')?.value || '',
+    };
+  }
+
+  function loadSubmissionIntoForm(docId) {
+    const d = submissionsCache.get(docId);
+    if (!d?.structuredData) { alert('This submission was saved before structured data was added. Please use "Copy summary" instead.'); return; }
+    const sd = d.structuredData;
+    showForm();
+
+    // Reset members
+    document.getElementById('membersContainer').innerHTML = '';
+    memberCount = 0;
+
+    // Categories
+    document.querySelectorAll('#catList .tab-rename').forEach(row => {
+      const check = row.querySelector('.check-item');
+      const renameInput = row.querySelector('input[type="text"]');
+      const label = check?.querySelector('.check-label')?.textContent || '';
+      check?.classList.remove('checked');
+      if (check) check.querySelector('input[type="checkbox"]').checked = false;
+      const match = sd.categories?.find(c => c === label || c === renameInput?.value);
+      if (match) {
+        check?.classList.add('checked');
+        if (check) check.querySelector('input[type="checkbox"]').checked = true;
+        if (renameInput) renameInput.value = match;
+      }
+    });
+    if (sd.tabOrder) document.getElementById('tabOrder').value = sd.tabOrder;
+
+    // Members
+    (sd.members || []).forEach(m => {
+      addMember();
+      const id = memberCount;
+      const set = (s, v) => { const el = document.getElementById('m' + id + s); if (el && v) el.value = v; };
+      set('-name', m.name); set('-title', m.title); set('-cat', m.category);
+      set('-order', m.order); set('-shortbio', m.shortBio); set('-fullbio', m.fullBio);
+      set('-linkedin', m.linkedin); set('-twitter', m.twitter); set('-photo', m.photo);
+      updatePreview(id);
+    });
+
+    // Photos
+    if (sd.photoDelivery) { document.getElementById('photoDelivery').value = sd.photoDelivery; togglePhotoUpload(sd.photoDelivery); }
+    if (sd.photoCrop)  document.getElementById('photoCrop').value  = sd.photoCrop;
+    if (sd.photoLink)  document.getElementById('photoLink').value  = sd.photoLink;
+    if (sd.photoNotes) document.getElementById('photoNotes').value = sd.photoNotes;
+    if (sd.photoStyle) {
+      document.querySelectorAll('#photoStyleGroup .radio-item').forEach(r => {
+        if (r.querySelector('.radio-text')?.textContent === sd.photoStyle) selectRadio(r, 'photoStyleGroup');
+      });
+    }
+
+    // Timeline
+    if (sd.deadline)   document.getElementById('deadline').value   = sd.deadline;
+    if (sd.golive)     document.getElementById('golive').value     = sd.golive;
+    if (sd.pocName)    document.getElementById('pocName').value    = sd.pocName;
+    if (sd.pocEmail)   document.getElementById('pocEmail').value   = sd.pocEmail;
+    if (sd.otherNotes) document.getElementById('otherNotes').value = sd.otherNotes;
+
+    // Open all sections
+    document.querySelectorAll('.section-body').forEach(b => b.classList.add('open'));
+    document.querySelectorAll('.section-chevron').forEach(c => c.classList.add('open'));
+    document.querySelectorAll('.section-head').forEach(h => h.classList.add('open'));
+
+    // Reset submit button
+    document.getElementById('outputBox').style.display = 'none';
+    document.getElementById('sendStatus').innerHTML = '';
+    const btn = document.getElementById('confirmSendBtn');
+    btn.disabled = false; btn.style.opacity = ''; btn.style.background = ''; btn.style.boxShadow = '';
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Confirm &amp; send to team';
+
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   function confirmSend() {
     const sendBtn = document.getElementById('confirmSendBtn');
     const status = document.getElementById('sendStatus');
@@ -1508,6 +1680,7 @@
         email: currentUser.email,
         pocName,
         summary: out,
+        structuredData: captureFormData(),
         submittedAt: firebase.firestore.FieldValue.serverTimestamp()
       }).catch(e => console.warn('Firestore save failed:', e));
     }
