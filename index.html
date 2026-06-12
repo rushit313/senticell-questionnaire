@@ -743,6 +743,37 @@
   .nav-divider { border: none; border-top: 1px solid var(--line); margin: 8px 0; }
   .nav-item.history-nav { background: var(--bg); }
   .nav-item.history-nav.active { background: var(--ink); color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+
+  /* Form type landing */
+  #formLanding { display:none; }
+  #socialMain  { display:none; }
+  .form-type-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; }
+  .form-type-card { background:var(--surface); border-radius:var(--radius-lg); padding:2rem 1.75rem; cursor:pointer; border:2px solid transparent; box-shadow:var(--shadow-sm); transition:all 0.2s; text-align:left; }
+  .form-type-card:hover { border-color:var(--accent); box-shadow:var(--shadow-md); transform:translateY(-2px); }
+  .ftc-icon { width:52px; height:52px; background:var(--accent-light); border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:1rem; color:var(--accent); }
+  .ftc-title { font-family:var(--font-display); font-size:22px; color:var(--ink); margin-bottom:6px; }
+  .ftc-desc { font-size:13px; color:var(--ink-3); line-height:1.6; margin-bottom:0; }
+  .ftc-arrow { display:inline-flex; align-items:center; gap:6px; margin-top:1.25rem; font-size:13px; font-weight:500; color:var(--accent); }
+  .form-back-link { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--ink-3); cursor:pointer; margin-bottom:1rem; text-decoration:none; padding:6px 0; transition:color 0.15s; border:none; background:none; font-family:var(--font-body); }
+  .form-back-link:hover { color:var(--accent); }
+
+  /* SM post cards */
+  .sm-post-card { background:var(--surface); border-radius:var(--radius); border:1.5px solid var(--line); padding:1.25rem 1.5rem; margin-bottom:1rem; box-shadow:var(--shadow-sm); }
+  .sm-post-header { display:flex; align-items:center; gap:12px; margin-bottom:1.25rem; padding-bottom:1rem; border-bottom:1px solid var(--line); }
+  .sm-post-badge { width:36px; height:36px; border-radius:10px; background:var(--accent-light); display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:13px; font-weight:700; flex-shrink:0; }
+  .sm-post-label { font-size:13px; font-weight:600; color:var(--ink); }
+  .sm-post-preview { font-size:12px; color:var(--ink-3); margin-top:1px; }
+
+  /* Platform chips */
+  .platform-chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .platform-chip { display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:50px; border:1.5px solid var(--line-2); background:var(--surface); cursor:pointer; font-size:13px; font-weight:500; color:var(--ink-2); transition:all 0.15s; user-select:none; }
+  .platform-chip:hover { border-color:var(--accent); color:var(--accent); }
+  .platform-chip.selected { border-color:var(--accent); background:var(--accent-light); color:var(--accent); font-weight:600; }
+
+  /* History badges */
+  .form-type-badge { font-size:10px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; padding:3px 8px; border-radius:50px; flex-shrink:0; }
+  .badge-website { background:#e8f4fd; color:#0369a1; }
+  .badge-social  { background:#f3e8fd; color:#7c3aed; }
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -810,23 +841,37 @@
     <a class="nav-item history-nav" id="navHistory" href="#" onclick="showHistory();return false;">
       <span class="nav-dot" style="font-size:13px;">≡</span> Submissions
     </a>
-    <a class="nav-item" id="navFormLink" href="#" onclick="showForm();return false;">
+    <a class="nav-item" id="navFormLink" href="#" onclick="showFormLanding();return false;">
       <span class="nav-dot" style="font-size:13px;">✎</span> Fill form
     </a>
     <hr class="nav-divider">
-    <div class="sidebar-title" id="sectionNavTitle">Sections</div>
-    <div id="sectionNav">
-      <a class="nav-item active" id="navSec1" href="#sec1" onclick="showForm()">
+    <div class="sidebar-title" id="sectionNavTitle" style="display:none">Sections</div>
+    <div id="sectionNav" style="display:none">
+      <a class="nav-item active" id="navSec1" href="#sec1" onclick="showWebsiteForm()">
         <span class="nav-dot">1</span> Team categories
       </a>
-      <a class="nav-item" id="navSec2" href="#sec2" onclick="showForm()">
+      <a class="nav-item" id="navSec2" href="#sec2" onclick="showWebsiteForm()">
         <span class="nav-dot">2</span> Team members
       </a>
-      <a class="nav-item" id="navSec3" href="#sec3" onclick="showForm()">
+      <a class="nav-item" id="navSec3" href="#sec3" onclick="showWebsiteForm()">
         <span class="nav-dot">3</span> Photos & assets
       </a>
-      <a class="nav-item" id="navSec4" href="#sec6" onclick="showForm()">
+      <a class="nav-item" id="navSec4" href="#sec6" onclick="showWebsiteForm()">
         <span class="nav-dot">4</span> Timeline & contact
+      </a>
+    </div>
+    <div id="sectionNavSM" style="display:none">
+      <a class="nav-item active" id="navSMSec1" href="#smSec1">
+        <span class="nav-dot">1</span> Platforms
+      </a>
+      <a class="nav-item" id="navSMSec2" href="#smSec2">
+        <span class="nav-dot">2</span> Content pieces
+      </a>
+      <a class="nav-item" id="navSMSec3" href="#smSec3">
+        <span class="nav-dot">3</span> Tone & brand
+      </a>
+      <a class="nav-item" id="navSMSec4" href="#smSec4">
+        <span class="nav-dot">4</span> Timeline
       </a>
     </div>
   </nav>
@@ -1104,6 +1149,285 @@
     </div>
   </div>
 
+  <!-- Form type landing -->
+  <div id="formLanding">
+    <div class="hero" style="margin-bottom:1.5rem;">
+      <div class="hero-inner">
+        <div class="hero-eyebrow">Content collection</div>
+        <h1>What would you<br><em>like to fill in?</em></h1>
+        <p>Choose the type of content submission below. You can always switch back to this screen from the sidebar.</p>
+      </div>
+      <div class="hero-meta">
+        <div class="meta-item"><span>Senticell.bio</span>Project</div>
+        <div class="meta-item"><span>Content</span>Collection</div>
+        <div class="meta-item"><span>&lt; 15 min</span>Est. time</div>
+      </div>
+    </div>
+    <div class="form-type-grid">
+      <div class="form-type-card" onclick="showWebsiteForm()">
+        <div class="ftc-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M9 21V9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="ftc-title">Website</div>
+        <div class="ftc-desc">Team page content — member bios, headshots, categories, and timeline for your Senticell.bio team page.</div>
+        <div class="ftc-arrow">Start form <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="form-type-card" onclick="showSocialForm()">
+        <div class="ftc-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="1.8"/><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M8.7 10.7l6.6-4M8.7 13.3l6.6 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="ftc-title">Social Media</div>
+        <div class="ftc-desc">Captions, visuals, hashtags, and tone guidelines for LinkedIn, Instagram, Twitter/X, and more.</div>
+        <div class="ftc-arrow">Start form <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social Media form -->
+  <div id="socialMain">
+
+    <button class="form-back-link" onclick="showFormLanding()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to form type
+    </button>
+
+    <div class="hero" style="background:linear-gradient(135deg,rgba(80,20,120,0.85) 0%,rgba(40,5,80,0.80) 100%),url('https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=1920&auto=format&fit=crop&q=80') center/cover no-repeat;margin-bottom:1.5rem;">
+      <div class="hero-inner">
+        <div class="hero-eyebrow">Social media content collection</div>
+        <h1>Social Media —<br><em>content brief</em></h1>
+        <p>Tell us which platforms you need content for, what posts you want, and the tone to match your brand. Takes about 10–15 minutes.</p>
+      </div>
+      <div class="hero-meta">
+        <div class="meta-item"><span>Senticell</span>Brand</div>
+        <div class="meta-item"><span>Social</span>Content</div>
+        <div class="meta-item"><span>10–15 min</span>Est. time</div>
+      </div>
+    </div>
+
+    <!-- SM Section 1: Platforms & goal -->
+    <div class="form-section" id="smSec1">
+      <div class="section-head open" onclick="toggleSection(this)">
+        <div class="section-num">1</div>
+        <div class="section-info">
+          <div class="section-title">Platforms & goal</div>
+          <div class="section-desc">Which platforms and what are you trying to achieve?</div>
+        </div>
+        <span class="section-chevron open">&#8964;</span>
+      </div>
+      <div class="section-body open">
+        <div class="field">
+          <label>Select platforms <span class="req">*</span> <span class="hint">Click to toggle</span></label>
+          <div class="platform-chips" id="smPlatformChips" style="margin-top:8px;">
+            <span class="platform-chip" onclick="togglePlatformChip(this)" data-platform="LinkedIn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+              LinkedIn
+            </span>
+            <span class="platform-chip" onclick="togglePlatformChip(this)" data-platform="Instagram">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+              Instagram
+            </span>
+            <span class="platform-chip" onclick="togglePlatformChip(this)" data-platform="Twitter / X">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Twitter / X
+            </span>
+            <span class="platform-chip" onclick="togglePlatformChip(this)" data-platform="Facebook">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+              Facebook
+            </span>
+            <span class="platform-chip" onclick="togglePlatformChip(this)" data-platform="TikTok">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.85a8.27 8.27 0 004.84 1.54V6.94a4.85 4.85 0 01-1.07-.25z"/></svg>
+              TikTok
+            </span>
+            <span class="platform-chip" onclick="togglePlatformChip(this)" data-platform="YouTube">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/></svg>
+              YouTube
+            </span>
+          </div>
+          <input type="hidden" id="smPlatforms">
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Primary content goal <span class="req">*</span></label>
+            <select id="smGoal">
+              <option value="">— Select —</option>
+              <option>Brand awareness</option>
+              <option>Product / feature launch</option>
+              <option>Team & culture highlight</option>
+              <option>Thought leadership</option>
+              <option>Event promotion</option>
+              <option>Engagement & community</option>
+              <option>Recruitment</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Posting frequency <span class="hint">per week</span></label>
+            <select id="smFrequency">
+              <option value="">— Select —</option>
+              <option>1–2 posts / week</option>
+              <option>3–4 posts / week</option>
+              <option>5+ posts / week</option>
+              <option>One-off campaign</option>
+              <option>As needed</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SM Section 2: Content pieces -->
+    <div class="form-section" id="smSec2">
+      <div class="section-head open" onclick="toggleSection(this)">
+        <div class="section-num">2</div>
+        <div class="section-info">
+          <div class="section-title">Content pieces</div>
+          <div class="section-desc">Add each post, reel, or story you need — one card per piece</div>
+        </div>
+        <span class="section-chevron open">&#8964;</span>
+      </div>
+      <div class="section-body open">
+        <div id="smPostsContainer"></div>
+        <button class="add-member-btn" onclick="addSMPost()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Add content piece
+        </button>
+      </div>
+    </div>
+
+    <!-- SM Section 3: Tone & brand -->
+    <div class="form-section" id="smSec3">
+      <div class="section-head" onclick="toggleSection(this)">
+        <div class="section-num">3</div>
+        <div class="section-info">
+          <div class="section-title">Tone & brand voice</div>
+          <div class="section-desc">How should the content sound and feel?</div>
+        </div>
+        <span class="section-chevron">&#8964;</span>
+      </div>
+      <div class="section-body">
+        <div class="field">
+          <label>Voice / tone <span class="req">*</span></label>
+          <div class="radio-group" id="smToneGroup">
+            <label class="radio-item" onclick="selectRadio(this,'smToneGroup')">
+              <input type="radio" name="smTone" value="Professional & authoritative">
+              <span class="radio-box"></span>
+              <span class="radio-text">Professional &amp; authoritative</span>
+            </label>
+            <label class="radio-item" onclick="selectRadio(this,'smToneGroup')">
+              <input type="radio" name="smTone" value="Friendly & approachable">
+              <span class="radio-box"></span>
+              <span class="radio-text">Friendly &amp; approachable</span>
+            </label>
+            <label class="radio-item" onclick="selectRadio(this,'smToneGroup')">
+              <input type="radio" name="smTone" value="Inspiring & motivational">
+              <span class="radio-box"></span>
+              <span class="radio-text">Inspiring &amp; motivational</span>
+            </label>
+            <label class="radio-item" onclick="selectRadio(this,'smToneGroup')">
+              <input type="radio" name="smTone" value="Educational & informative">
+              <span class="radio-box"></span>
+              <span class="radio-text">Educational &amp; informative</span>
+            </label>
+            <label class="radio-item" onclick="selectRadio(this,'smToneGroup')">
+              <input type="radio" name="smTone" value="Witty & playful">
+              <span class="radio-box"></span>
+              <span class="radio-text">Witty &amp; playful</span>
+            </label>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Reference accounts <span class="hint">Accounts whose style you like</span></label>
+            <input type="text" id="smRefAccounts" placeholder="@example1, @example2">
+          </div>
+          <div class="field">
+            <label>Brand hashtags <span class="hint">Consistent tags to always include</span></label>
+            <input type="text" id="smBrandHashtags" placeholder="#senticell #biotech">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Content do's <span class="hint">Things to always include or say</span></label>
+            <textarea id="smDos" placeholder="Use data and evidence, mention Senticell.bio…" style="min-height:80px"></textarea>
+          </div>
+          <div class="field">
+            <label>Content don'ts <span class="hint">Things to avoid</span></label>
+            <textarea id="smDonts" placeholder="Avoid overly technical jargon, no competitor names…" style="min-height:80px"></textarea>
+          </div>
+        </div>
+        <div class="field">
+          <label>Additional brand notes <span class="hint">Colours, language, anything else</span></label>
+          <textarea id="smBrandNotes" placeholder="Red and white colour palette, always capitalise Senticell…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- SM Section 4: Timeline & contact -->
+    <div class="form-section" id="smSec4">
+      <div class="section-head" onclick="toggleSection(this)">
+        <div class="section-num">4</div>
+        <div class="section-info">
+          <div class="section-title">Timeline & contact</div>
+          <div class="section-desc">Deadlines and who to reach if we have questions</div>
+        </div>
+        <span class="section-chevron">&#8964;</span>
+      </div>
+      <div class="section-body">
+        <div class="grid-2">
+          <div class="field">
+            <label>Content-ready deadline <span class="req">*</span></label>
+            <input type="date" id="smDeadline">
+          </div>
+          <div class="field">
+            <label>First post go-live date</label>
+            <input type="date" id="smGolive">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Point of contact — name</label>
+            <input type="text" id="smPocName" placeholder="Your full name">
+          </div>
+          <div class="field">
+            <label>Point of contact — email</label>
+            <input type="email" id="smPocEmail" placeholder="you@example.com">
+          </div>
+        </div>
+        <div class="field">
+          <label>Other notes</label>
+          <textarea id="smOtherNotes" placeholder="Anything else we should know…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- SM Output & confirm -->
+    <div class="form-section" style="margin-top:1.5rem;">
+      <div class="section-body open" style="display:block;padding:1.5rem;">
+        <button class="btn-primary" style="font-size:15px;padding:13px 28px;" onclick="submitSocialForm()">
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M8 1l7 3.5-7 3.5-7-3.5z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M15 4.5V12M1 4.5L8 8v7" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Generate summary
+        </button>
+        <p style="font-size:12px;color:var(--ink-3);margin-top:8px;">Review the summary below before sending to the team.</p>
+      </div>
+    </div>
+
+    <div id="smOutputBox" style="display:none;" class="form-section">
+      <div class="section-body open" style="display:block;padding:1.5rem;">
+        <label style="font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:8px;">Preview — review before sending</label>
+        <textarea id="smOutputText" class="submission-text" readonly style="min-height:220px;width:100%;"></textarea>
+        <div style="margin-top:1rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="btn-primary" id="smConfirmSendBtn" onclick="confirmSendSocial()" style="font-size:13px;padding:9px 18px;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Confirm &amp; send to team
+          </button>
+          <button class="btn-secondary" onclick="submitSocialForm()" style="font-size:13px;padding:9px 18px;">Re-generate</button>
+        </div>
+        <div id="smSendStatus" style="margin-top:10px;font-size:13px;"></div>
+      </div>
+    </div>
+
+  </div><!-- /socialMain -->
+
   </main>
 </div>
 
@@ -1202,19 +1526,54 @@
   function doSignOut() { auth && auth.signOut(); }
 
   // ── View toggle ───────────────────────────────────────────────
+  function _hideAll() {
+    ['formMain','historyMain','formLanding','socialMain'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+    document.getElementById('sectionNav').style.display   = 'none';
+    document.getElementById('sectionNavSM').style.display = 'none';
+    document.getElementById('sectionNavTitle').style.display = 'none';
+  }
+
   function showHistory() {
-    document.getElementById('formMain').style.display    = 'none';
+    _hideAll();
     document.getElementById('historyMain').style.display = 'block';
     document.getElementById('navHistory').classList.add('active');
     document.getElementById('navFormLink').classList.remove('active');
     loadHistory();
   }
 
-  function showForm() {
-    document.getElementById('formMain').style.display    = 'block';
-    document.getElementById('historyMain').style.display = 'none';
+  function showFormLanding() {
+    _hideAll();
+    document.getElementById('formLanding').style.display = 'block';
     document.getElementById('navHistory').classList.remove('active');
+    document.getElementById('navFormLink').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  function showWebsiteForm() {
+    _hideAll();
+    document.getElementById('formMain').style.display      = 'block';
+    document.getElementById('sectionNav').style.display    = 'block';
+    document.getElementById('sectionNavTitle').style.display = 'block';
+    document.getElementById('navHistory').classList.remove('active');
+    document.getElementById('navFormLink').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showSocialForm() {
+    _hideAll();
+    document.getElementById('socialMain').style.display      = 'block';
+    document.getElementById('sectionNavSM').style.display    = 'block';
+    document.getElementById('sectionNavTitle').style.display = 'block';
+    document.getElementById('navHistory').classList.remove('active');
+    document.getElementById('navFormLink').classList.add('active');
+    if (document.querySelectorAll('.sm-post-card').length === 0) addSMPost();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Alias kept so loadSubmissionIntoForm() still works
+  function showForm() { showWebsiteForm(); }
 
   // ── History ───────────────────────────────────────────────────
   const submissionsCache = new Map();
@@ -1296,10 +1655,53 @@
              <td style="font-size:13px;color:var(--ink-2);padding:4px 0;">${v}</td></tr>`).join('')}
       </table></div>` : '';
 
+    // Social media structured display
+    let smBodyHtml = '';
+    if (d.formType === 'socialMedia' && sd.posts) {
+      const smMeta = [
+        sd.platforms  && ['Platforms',  sd.platforms],
+        sd.goal       && ['Goal',       sd.goal],
+        sd.frequency  && ['Frequency',  sd.frequency],
+        sd.tone       && ['Tone',       sd.tone],
+        sd.deadline   && ['Deadline',   sd.deadline],
+        sd.pocEmail   && ['Contact',    sd.pocEmail],
+      ].filter(Boolean);
+      const smMetaHtml = smMeta.length ? `<div style="margin-bottom:1.25rem;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;">Overview</div>
+        <table style="width:100%;border-collapse:collapse;">${smMeta.map(([l,v]) =>
+          `<tr><td style="font-size:12px;color:var(--ink-3);padding:4px 12px 4px 0;white-space:nowrap;">${l}</td>
+               <td style="font-size:13px;color:var(--ink-2);padding:4px 0;">${v}</td></tr>`).join('')}
+        </table></div>` : '';
+      const postsHtml = sd.posts.length ? `<div style="margin-bottom:1rem;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;">Content pieces (${sd.posts.length})</div>
+        ${sd.posts.map((p, i) => {
+          const isUrl = p.media && (p.media.startsWith('http://') || p.media.startsWith('https://'));
+          const thumb = isUrl ? `<img src="${p.media}" alt="" style="width:46px;height:46px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` : '';
+          return `<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);align-items:flex-start;">
+            ${thumb}
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;font-weight:500;color:var(--ink);">${[p.platform,p.type].filter(Boolean).join(' · ') || 'Piece ' + (i+1)}</div>
+              ${p.caption ? `<div style="font-size:12px;color:var(--ink-2);margin-top:3px;line-height:1.5;white-space:pre-wrap;">${p.caption.slice(0,140)}${p.caption.length>140?'…':''}</div>` : ''}
+              ${p.hashtags ? `<div style="font-size:11px;color:var(--accent);margin-top:3px;">${p.hashtags}</div>` : ''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>` : '';
+      smBodyHtml = smMetaHtml + postsHtml;
+    }
+
     // Fallback: raw text if no structuredData yet
-    const bodyContent = (membersHtml || metaHtml)
-      ? membersHtml + metaHtml
+    const bodyContent = smBodyHtml || (membersHtml || metaHtml)
+      ? smBodyHtml + membersHtml + metaHtml
       : `<textarea class="submission-text" readonly>${d.summary || ''}</textarea>`;
+
+    const isWebsite = !d.formType || d.formType === 'website';
+    const badgeHtml = d.formType === 'socialMedia'
+      ? `<span class="form-type-badge badge-social">Social</span>`
+      : `<span class="form-type-badge badge-website">Website</span>`;
+    const reopenBtn = isWebsite
+      ? `<button class="btn-primary" style="font-size:13px;padding:9px 18px;" onclick="loadSubmissionIntoForm('${docId}')">✎ Re-open in form</button>`
+      : `<button class="btn-primary" style="font-size:13px;padding:9px 18px;" onclick="loadSocialSubmission('${docId}')">✎ Re-open in form</button>`;
 
     const card = document.createElement('div');
     card.className = 'submission-card';
@@ -1310,16 +1712,77 @@
           <div class="submission-by">${d.pocName || d.email}</div>
           <div class="submission-meta">${d.email} · ${date}</div>
         </div>
-        <span style="color:var(--ink-3);font-size:18px;line-height:1;">&#8964;</span>
+        ${badgeHtml}
+        <span style="color:var(--ink-3);font-size:18px;line-height:1;margin-left:8px;">&#8964;</span>
       </div>
       <div class="submission-body">
         ${bodyContent}
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-          <button class="btn-primary" style="font-size:13px;padding:9px 18px;" onclick="loadSubmissionIntoForm('${docId}')">✎ Re-open in form</button>
+          ${reopenBtn}
           <button class="btn-secondary" style="font-size:13px;padding:9px 18px;" onclick="copyTextById('${docId}')">Copy summary</button>
         </div>
       </div>`;
     return card;
+  }
+
+  function loadSocialSubmission(docId) {
+    const d = submissionsCache.get(docId);
+    if (!d?.structuredData) { alert('This submission was saved before structured data was added. Use "Copy summary" instead.'); return; }
+    const sd = d.structuredData;
+    showSocialForm();
+
+    // Platforms
+    document.getElementById('smPlatforms').value = sd.platforms || '';
+    document.querySelectorAll('#smPlatformChips .platform-chip').forEach(chip => {
+      const active = (sd.platforms || '').split(', ').map(s => s.trim()).includes(chip.dataset.platform);
+      chip.classList.toggle('selected', active);
+    });
+
+    // Section 1
+    if (sd.goal)      document.getElementById('smGoal').value      = sd.goal;
+    if (sd.frequency) document.getElementById('smFrequency').value = sd.frequency;
+
+    // Posts
+    document.getElementById('smPostsContainer').innerHTML = '';
+    smPostCount = 0;
+    (sd.posts || []).forEach(p => {
+      addSMPost();
+      const n = smPostCount;
+      if (p.platform)  document.getElementById('smp' + n + '-platform').value  = p.platform;
+      if (p.type)      document.getElementById('smp' + n + '-type').value      = p.type;
+      if (p.caption)   document.getElementById('smp' + n + '-caption').value   = p.caption;
+      if (p.hashtags)  document.getElementById('smp' + n + '-hashtags').value  = p.hashtags;
+      if (p.link)      document.getElementById('smp' + n + '-link').value      = p.link;
+      if (p.media)     document.getElementById('smp' + n + '-media').value     = p.media;
+      if (p.notes)     document.getElementById('smp' + n + '-notes').value     = p.notes;
+      updateSMPostPreview(n);
+    });
+
+    // Tone & brand
+    document.querySelectorAll('[name="smTone"]').forEach(r => {
+      r.closest('.radio-item').classList.toggle('selected', r.value === sd.tone);
+    });
+    if (sd.refAccounts)   document.getElementById('smRefAccounts').value   = sd.refAccounts;
+    if (sd.brandHashtags) document.getElementById('smBrandHashtags').value = sd.brandHashtags;
+    if (sd.dos)           document.getElementById('smDos').value           = sd.dos;
+    if (sd.donts)         document.getElementById('smDonts').value         = sd.donts;
+    if (sd.brandNotes)    document.getElementById('smBrandNotes').value    = sd.brandNotes;
+
+    // Timeline
+    if (sd.deadline)   document.getElementById('smDeadline').value   = sd.deadline;
+    if (sd.golive)     document.getElementById('smGolive').value      = sd.golive;
+    if (sd.pocName)    document.getElementById('smPocName').value     = sd.pocName;
+    if (sd.pocEmail)   document.getElementById('smPocEmail').value    = sd.pocEmail;
+    if (sd.otherNotes) document.getElementById('smOtherNotes').value  = sd.otherNotes;
+
+    // Reset output
+    document.getElementById('smOutputBox').style.display = 'none';
+    document.getElementById('smSendStatus').innerHTML = '';
+    const btn = document.getElementById('smConfirmSendBtn');
+    btn.disabled = false; btn.style.opacity = ''; btn.style.background = ''; btn.style.boxShadow = '';
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Confirm &amp; send to team';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function copyTextById(docId) {
@@ -1679,6 +2142,7 @@
         userId: currentUser.uid,
         email: currentUser.email,
         pocName,
+        formType: 'website',
         summary: out,
         structuredData: captureFormData(),
         submittedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1804,22 +2268,288 @@
     }
   }
 
-  // Scroll spy — only affects section nav items, not History/Fill-form links
+  // ── Platform chips ────────────────────────────────────────────
+  function togglePlatformChip(el) {
+    el.classList.toggle('selected');
+    const selected = Array.from(document.querySelectorAll('#smPlatformChips .platform-chip.selected'))
+      .map(c => c.dataset.platform);
+    document.getElementById('smPlatforms').value = selected.join(', ');
+  }
+
+  // ── Social media posts ────────────────────────────────────────
+  let smPostCount = 0;
+
+  function addSMPost() {
+    smPostCount++;
+    const n = smPostCount;
+    const container = document.getElementById('smPostsContainer');
+    const div = document.createElement('div');
+    div.className = 'sm-post-card';
+    div.id = 'smpost-' + n;
+    div.innerHTML = `
+      <div class="sm-post-header">
+        <div class="sm-post-badge">${n}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="sm-post-label">Content piece ${n}</div>
+          <div class="sm-post-preview" id="smp-preview-${n}">Fill in details below</div>
+        </div>
+        <button class="remove-member" onclick="removeSMPost(${n})">Remove</button>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Platform <span class="req">*</span></label>
+          <select id="smp${n}-platform" onchange="updateSMPostPreview(${n})">
+            <option value="">— Select —</option>
+            <option>LinkedIn</option>
+            <option>Instagram</option>
+            <option>Twitter / X</option>
+            <option>Facebook</option>
+            <option>TikTok</option>
+            <option>YouTube</option>
+            <option>Multiple</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Content type <span class="req">*</span></label>
+          <select id="smp${n}-type" onchange="updateSMPostPreview(${n})">
+            <option value="">— Select —</option>
+            <option>Static post / image</option>
+            <option>Carousel / swipe</option>
+            <option>Reel / short video</option>
+            <option>Story</option>
+            <option>Text-only post</option>
+            <option>Bio / profile update</option>
+            <option>Thread</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Caption / copy <span class="hint">Write the post text or brief us on what it should say</span></label>
+        <textarea id="smp${n}-caption" placeholder="Write the caption here, or describe the key message you want to convey…" style="min-height:90px"></textarea>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Hashtags <span class="hint">For this post specifically</span></label>
+          <input type="text" id="smp${n}-hashtags" placeholder="#biotech #senticell #cellbiology">
+        </div>
+        <div class="field">
+          <label>Link to include <span class="hint">Optional URL</span></label>
+          <input type="url" id="smp${n}-link" placeholder="https://senticell.bio/...">
+        </div>
+      </div>
+      <div class="field">
+        <label>Visual / media <span class="hint">Upload an image or describe what you need</span></label>
+        <div style="border:1.5px dashed var(--line-2);border-radius:var(--radius);padding:10px 14px;background:var(--bg);display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="document.getElementById('smp${n}-mediafile').click()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="color:var(--ink-3);flex-shrink:0"><path d="M12 4v12M6 10l6-6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span id="smp${n}-medialabel" style="font-size:13px;color:var(--ink-3);">Click to upload image / video</span>
+          <input type="file" id="smp${n}-mediafile" accept="image/*,video/*" style="display:none" onchange="uploadSMMedia(${n},this)">
+        </div>
+        <div id="smp${n}-mediastatus" style="font-size:12px;margin-top:4px;"></div>
+        <input type="text" id="smp${n}-media" placeholder="or describe: 'team photo with lab background', 'infographic about X'" style="margin-top:6px">
+      </div>
+      <div class="field">
+        <label>Notes for this piece <span class="hint">Any specific instructions</span></label>
+        <input type="text" id="smp${n}-notes" placeholder="Post on Monday morning, tag @person, boost after 24h…">
+      </div>
+    `;
+    container.appendChild(div);
+    div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function removeSMPost(n) {
+    const el = document.getElementById('smpost-' + n);
+    if (el) el.remove();
+  }
+
+  function updateSMPostPreview(n) {
+    const platform = document.getElementById('smp' + n + '-platform')?.value || '';
+    const type     = document.getElementById('smp' + n + '-type')?.value || '';
+    const preview  = document.getElementById('smp-preview-' + n);
+    if (preview) preview.textContent = platform && type ? platform + ' · ' + type : platform || type || 'Fill in details below';
+  }
+
+  async function uploadSMMedia(n, input) {
+    const label  = document.getElementById('smp' + n + '-medialabel');
+    const status = document.getElementById('smp' + n + '-mediastatus');
+    const textIn = document.getElementById('smp' + n + '-media');
+    if (!input.files || !input.files[0]) return;
+    label.textContent = 'Uploading…'; label.style.color = 'var(--ink-3)';
+    if (status) status.innerHTML = '<span style="color:var(--ink-3)">Uploading…</span>';
+    try {
+      const url = await uploadToCloudinary(input.files[0]);
+      label.textContent = '✓ Uploaded'; label.style.color = '#0f7b55';
+      textIn.value = url;
+      if (status) status.innerHTML = '<a href="' + url + '" target="_blank" style="font-size:12px;color:var(--accent);word-break:break-all;">' + url + '</a>';
+    } catch (e) {
+      label.textContent = 'Upload failed — try again'; label.style.color = '#c0392b';
+      if (status) status.innerHTML = '<span style="color:#c0392b">' + e.message + '</span>';
+    }
+  }
+
+  // ── Social media form capture & submit ───────────────────────
+  function captureSocialFormData() {
+    const posts = [];
+    document.querySelectorAll('.sm-post-card').forEach(card => {
+      const id = card.id.replace('smpost-', '');
+      const g  = s => document.getElementById('smp' + id + s)?.value || '';
+      posts.push({ platform: g('-platform'), type: g('-type'), caption: g('-caption'),
+        hashtags: g('-hashtags'), link: g('-link'), media: g('-media'), notes: g('-notes') });
+    });
+    return {
+      platforms:     document.getElementById('smPlatforms')?.value || '',
+      goal:          document.getElementById('smGoal')?.value || '',
+      frequency:     document.getElementById('smFrequency')?.value || '',
+      posts,
+      tone:          document.querySelector('[name="smTone"]:checked')?.value || '',
+      refAccounts:   document.getElementById('smRefAccounts')?.value || '',
+      brandHashtags: document.getElementById('smBrandHashtags')?.value || '',
+      dos:           document.getElementById('smDos')?.value || '',
+      donts:         document.getElementById('smDonts')?.value || '',
+      brandNotes:    document.getElementById('smBrandNotes')?.value || '',
+      deadline:      document.getElementById('smDeadline')?.value || '',
+      golive:        document.getElementById('smGolive')?.value || '',
+      pocName:       document.getElementById('smPocName')?.value || '',
+      pocEmail:      document.getElementById('smPocEmail')?.value || '',
+      otherNotes:    document.getElementById('smOtherNotes')?.value || '',
+    };
+  }
+
+  function submitSocialForm() {
+    const sd = captureSocialFormData();
+    let out = '';
+    out += '╔══════════════════════════════════════════════╗\n';
+    out += '║   SENTICELL — SOCIAL MEDIA CONTENT BRIEF    ║\n';
+    out += '╚══════════════════════════════════════════════╝\n\n';
+
+    out += '━━ 1. PLATFORMS & GOAL ━━\n\n';
+    if (sd.platforms)  out += '  Platforms:  ' + sd.platforms + '\n';
+    if (sd.goal)       out += '  Goal:       ' + sd.goal + '\n';
+    if (sd.frequency)  out += '  Frequency:  ' + sd.frequency + '\n';
+
+    out += '\n━━ 2. CONTENT PIECES ━━\n';
+    if (!sd.posts.length) {
+      out += '\n  (No content pieces added)\n';
+    }
+    sd.posts.forEach((p, i) => {
+      out += '\n  ─ Piece ' + (i + 1) + ' ─\n';
+      if (p.platform)  out += '    Platform:  ' + p.platform + '\n';
+      if (p.type)      out += '    Type:      ' + p.type + '\n';
+      if (p.caption)   out += '    Caption:   ' + p.caption.replace(/\n/g, '\n               ') + '\n';
+      if (p.hashtags)  out += '    Hashtags:  ' + p.hashtags + '\n';
+      if (p.link)      out += '    Link:      ' + p.link + '\n';
+      if (p.media)     out += '    Visual:    ' + p.media + '\n';
+      if (p.notes)     out += '    Notes:     ' + p.notes + '\n';
+    });
+
+    out += '\n━━ 3. TONE & BRAND ━━\n\n';
+    if (sd.tone)          out += '  Voice/tone:        ' + sd.tone + '\n';
+    if (sd.refAccounts)   out += '  Reference accounts:' + sd.refAccounts + '\n';
+    if (sd.brandHashtags) out += '  Brand hashtags:    ' + sd.brandHashtags + '\n';
+    if (sd.dos)           out += '  Do\'s:              ' + sd.dos + '\n';
+    if (sd.donts)         out += '  Don\'ts:            ' + sd.donts + '\n';
+    if (sd.brandNotes)    out += '  Brand notes:       ' + sd.brandNotes + '\n';
+
+    out += '\n━━ 4. TIMELINE & CONTACT ━━\n\n';
+    if (sd.deadline)   out += '  Deadline:  ' + sd.deadline + '\n';
+    if (sd.golive)     out += '  Go-live:   ' + sd.golive + '\n';
+    if (sd.pocName || sd.pocEmail) out += '  Contact:   ' + [sd.pocName, sd.pocEmail].filter(Boolean).join(' · ') + '\n';
+    if (sd.otherNotes) out += '  Notes:     ' + sd.otherNotes + '\n';
+
+    out += '\n══════════════════════════════════════════════\n';
+
+    document.getElementById('smOutputText').value = out;
+    document.getElementById('smOutputBox').style.display = 'block';
+    document.getElementById('smSendStatus').textContent = '';
+    const btn = document.getElementById('smConfirmSendBtn');
+    btn.disabled = false; btn.style.opacity = ''; btn.style.background = ''; btn.style.boxShadow = '';
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Confirm &amp; send to team';
+    document.getElementById('smOutputBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function confirmSendSocial() {
+    const btn    = document.getElementById('smConfirmSendBtn');
+    const status = document.getElementById('smSendStatus');
+    const sd     = captureSocialFormData();
+    const pocName = sd.pocName || 'A client';
+    const out   = document.getElementById('smOutputText').value;
+
+    btn.disabled = true; btn.style.opacity = '0.6'; btn.textContent = 'Sending…';
+    status.innerHTML = '';
+
+    if (db && currentUser) {
+      db.collection('submissions').add({
+        userId: currentUser.uid,
+        email: currentUser.email,
+        pocName,
+        formType: 'socialMedia',
+        summary: out,
+        structuredData: sd,
+        submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(e => console.warn('Firestore save failed:', e));
+    }
+
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: '573d601c-3560-43af-ae69-37cbbc583816',
+        subject: 'Senticell Social Media Brief — submission from ' + pocName,
+        message: out,
+        from_name: pocName
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Sent!';
+        btn.style.background = 'var(--success)'; btn.style.boxShadow = '0 4px 16px rgba(15,123,85,0.35)'; btn.style.opacity = '1';
+        status.innerHTML = '<span style="color:#0f7b55;">✓ Responses sent to shyftrealitylabs@gmail.com</span>';
+      } else {
+        btn.disabled = false; btn.style.opacity = '1';
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Retry send';
+        status.innerHTML = '<span style="color:#c0392b;">Send failed — please try again.</span>';
+      }
+    })
+    .catch(() => {
+      btn.disabled = false; btn.style.opacity = '1';
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Retry send';
+      status.innerHTML = '<span style="color:#c0392b;">Network error — please try again.</span>';
+    });
+  }
+
+  // Scroll spy — website sections
   const sections    = ['sec1','sec2','sec3','sec6'];
   const sectionNavs = ['navSec1','navSec2','navSec3','navSec4'];
+  // Scroll spy — social media sections
+  const smSections    = ['smSec1','smSec2','smSec3','smSec4'];
+  const smSectionNavs = ['navSMSec1','navSMSec2','navSMSec3','navSMSec4'];
+
   window.addEventListener('scroll', () => {
-    if (document.getElementById('historyMain').style.display === 'block') return;
-    let current = 0;
-    sections.forEach((id, i) => {
-      const el = document.getElementById(id);
-      if (el && el.getBoundingClientRect().top < 120) current = i;
-    });
-    sectionNavs.forEach((navId, i) => {
-      document.getElementById(navId)?.classList.toggle('active', i === current);
-    });
+    const inHistory = document.getElementById('historyMain').style.display === 'block';
+    const inSocial  = document.getElementById('socialMain').style.display  === 'block';
+    const inWebsite = document.getElementById('formMain').style.display    === 'block';
+    if (inHistory) return;
+    if (inWebsite) {
+      let current = 0;
+      sections.forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top < 120) current = i;
+      });
+      sectionNavs.forEach((navId, i) => document.getElementById(navId)?.classList.toggle('active', i === current));
+    }
+    if (inSocial) {
+      let current = 0;
+      smSections.forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top < 120) current = i;
+      });
+      smSectionNavs.forEach((navId, i) => document.getElementById(navId)?.classList.toggle('active', i === current));
+    }
   });
 
-  // Init: add first member
+  // Init: show landing, add first member in background
+  showFormLanding();
   addMember();
 </script>
 
