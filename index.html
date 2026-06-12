@@ -705,9 +705,79 @@
     .check-grid { grid-template-columns: 1fr; }
     .hero h1 { font-size: 24px; }
   }
+
+  /* Login overlay */
+  #loginOverlay { position: fixed; inset: 0; background: rgba(239,239,239,0.98); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  .login-card { background: var(--surface); border-radius: var(--radius-lg); padding: 2.5rem; width: 100%; max-width: 400px; box-shadow: var(--shadow-md); }
+  .login-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 2rem; }
+  .login-logo-mark { width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .login-logo-name { font-family: var(--font-display); font-size: 17px; color: var(--ink); }
+  .login-card h2 { font-family: var(--font-display); font-size: 23px; font-weight: 400; color: var(--ink); margin-bottom: 5px; }
+  .login-subtitle { font-size: 14px; color: var(--ink-3); margin-bottom: 1.5rem; }
+  .login-error { background: var(--danger-bg); color: var(--danger); border-radius: var(--radius); padding: 10px 14px; font-size: 13px; margin-bottom: 1rem; display: none; }
+  .auth-toggle { text-align: center; font-size: 13px; color: var(--ink-3); margin-top: 1rem; }
+  .auth-toggle a { color: var(--accent); text-decoration: none; font-weight: 500; }
+
+  /* User bar */
+  .user-bar { display: flex; align-items: center; gap: 8px; }
+  .user-email-tag { font-size: 12px; color: var(--ink-2); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .admin-pill { font-size: 10px; font-weight: 600; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: var(--radius-pill); letter-spacing: 0.05em; text-transform: uppercase; display: none; }
+  .sign-out-btn { background: none; border: 1.5px solid var(--line); border-radius: var(--radius-pill); padding: 5px 12px; font-size: 12px; color: var(--ink-3); cursor: pointer; font-family: var(--font-body); transition: all 0.15s; }
+  .sign-out-btn:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+
+  /* History */
+  #historyMain { display: none; }
+  .history-header { background: var(--surface); border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm); }
+  .history-header h2 { font-family: var(--font-display); font-size: 22px; font-weight: 400; color: var(--ink); }
+  .history-header p { font-size: 13px; color: var(--ink-3); margin-top: 4px; }
+  .submission-card { background: var(--surface); border-radius: var(--radius-lg); margin-bottom: 1rem; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .submission-head { display: flex; align-items: center; gap: 14px; padding: 1rem 1.25rem; cursor: pointer; transition: background 0.15s; user-select: none; }
+  .submission-head:hover { background: var(--bg); }
+  .submission-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 3px 10px rgba(229,48,48,0.25); }
+  .submission-info { flex: 1; min-width: 0; }
+  .submission-by { font-size: 14px; font-weight: 500; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .submission-meta { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+  .submission-body { display: none; padding: 1rem 1.25rem; border-top: 1px solid var(--line); background: var(--bg); }
+  .submission-body.open { display: block; }
+  .submission-text { width: 100%; min-height: 160px; font-family: 'Courier New', monospace; font-size: 12px; color: var(--ink-2); background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 1rem; resize: vertical; line-height: 1.7; }
+  .nav-divider { border: none; border-top: 1px solid var(--line); margin: 8px 0; }
+  .nav-item.history-nav { background: var(--bg); }
+  .nav-item.history-nav.active { background: var(--ink); color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
+
+<!-- ── Login overlay ────────────────────────────────────── -->
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-logo-row">
+      <div class="login-logo-mark">
+        <svg viewBox="0 0 18 18" fill="none" width="18" height="18">
+          <circle cx="9" cy="9" r="7" stroke="white" stroke-width="1.5"/>
+          <circle cx="9" cy="9" r="3.5" fill="white" opacity="0.9"/>
+          <path d="M9 2v2M9 14v2M2 9h2M14 9h2" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="login-logo-name">Senticell</span>
+    </div>
+    <h2 id="authModeTitle">Sign in to continue</h2>
+    <p class="login-subtitle">Enter your email and password to access the questionnaire.</p>
+    <div id="loginError" class="login-error"></div>
+    <div class="field">
+      <label>Email address</label>
+      <input type="email" id="authEmail" placeholder="you@example.com" onkeydown="if(event.key==='Enter')handleAuth()">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="authPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')handleAuth()">
+    </div>
+    <button class="btn-primary" id="authBtn" onclick="handleAuth()" style="width:100%;justify-content:center;margin-top:4px;">Sign in</button>
+    <p class="auth-toggle" id="authToggleText">Don't have an account? <a href="#" onclick="toggleAuthMode();return false;">Create one</a></p>
+  </div>
+</div>
 
 <header class="site-header">
   <a class="logo" href="#">
@@ -722,7 +792,11 @@
   </a>
   <div style="display:flex;align-items:center;gap:16px;">
     <span class="header-badge">Our Team · Content Form</span>
-    <span style="font-size:12px;color:var(--ink-3);">by <strong style="color:var(--ink-2);letter-spacing:0.03em;">SHYFT X</strong></span>
+    <div class="user-bar" id="userBar" style="display:none">
+      <span class="user-email-tag" id="userEmailTag"></span>
+      <span class="admin-pill" id="adminPill">Admin</span>
+      <button class="sign-out-btn" onclick="doSignOut()">Sign out</button>
+    </div>
   </div>
 </header>
 
@@ -732,23 +806,34 @@
 
   <!-- Sidebar -->
   <nav class="sidebar">
-    <div class="sidebar-title">Sections</div>
-    <a class="nav-item active" href="#sec1" onclick="scrollTo('sec1')">
-      <span class="nav-dot">1</span> Team categories
+    <div class="sidebar-title">Navigation</div>
+    <a class="nav-item history-nav" id="navHistory" href="#" onclick="showHistory();return false;">
+      <span class="nav-dot" style="font-size:13px;">≡</span> Submissions
     </a>
-    <a class="nav-item" href="#sec2" onclick="scrollTo('sec2')">
-      <span class="nav-dot">2</span> Team members
+    <a class="nav-item" id="navFormLink" href="#" onclick="showForm();return false;">
+      <span class="nav-dot" style="font-size:13px;">✎</span> Fill form
     </a>
-    <a class="nav-item" href="#sec3" onclick="scrollTo('sec3')">
-      <span class="nav-dot">3</span> Photos & assets
-    </a>
-    <a class="nav-item" href="#sec6" onclick="scrollTo('sec6')">
-      <span class="nav-dot">4</span> Timeline & contact
-    </a>
+    <hr class="nav-divider">
+    <div class="sidebar-title" id="sectionNavTitle">Sections</div>
+    <div id="sectionNav">
+      <a class="nav-item active" id="navSec1" href="#sec1" onclick="showForm()">
+        <span class="nav-dot">1</span> Team categories
+      </a>
+      <a class="nav-item" id="navSec2" href="#sec2" onclick="showForm()">
+        <span class="nav-dot">2</span> Team members
+      </a>
+      <a class="nav-item" id="navSec3" href="#sec3" onclick="showForm()">
+        <span class="nav-dot">3</span> Photos & assets
+      </a>
+      <a class="nav-item" id="navSec4" href="#sec6" onclick="showForm()">
+        <span class="nav-dot">4</span> Timeline & contact
+      </a>
+    </div>
   </nav>
 
   <!-- Main -->
   <main class="main">
+  <div id="formMain">
 
     <!-- Hero -->
     <div class="hero">
@@ -978,27 +1063,208 @@
     <div class="submit-area">
       <div id="formArea">
         <h2 class="submit-title">Ready to submit?</h2>
-        <p class="submit-desc">This will compile all your responses into a structured summary you can copy and share with the development team.</p>
+        <p class="submit-desc">Review your responses first, then confirm to send them to the team.</p>
         <button class="btn-primary" onclick="submitForm()">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.5 8.5l-5.5 5.5-5.5-5.5M8 14V2" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Generate summary
+          Review &amp; Submit
         </button>
         <button class="btn-secondary" onclick="clearForm()">Clear form</button>
       </div>
 
       <div class="output-box" id="outputBox">
         <div class="output-label">
-          Compiled responses — copy and share with your team
+          Review your responses before sending
           <button class="copy-btn" id="copyBtn" onclick="copyOutput()">Copy to clipboard</button>
         </div>
         <textarea class="output-text" id="outputText" readonly></textarea>
+        <div style="margin-top:1rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="btn-primary" id="confirmSendBtn" onclick="confirmSend()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Confirm &amp; send to team
+          </button>
+          <button class="btn-secondary" onclick="submitForm()">Re-generate</button>
+        </div>
+        <div id="sendStatus" style="margin-top:10px;font-size:13px;"></div>
       </div>
     </div>
+
+  </div><!-- /formMain -->
+
+  <!-- History view -->
+  <div id="historyMain">
+    <div class="history-header">
+      <div>
+        <h2>Submissions</h2>
+        <p id="historySubtitle">Loading…</p>
+      </div>
+      <button class="btn-secondary" onclick="loadHistory()" style="flex-shrink:0;">↺ Refresh</button>
+    </div>
+    <div id="historyContainer">
+      <p style="color:var(--ink-3);font-size:14px;padding:0.5rem 0;">Loading submissions…</p>
+    </div>
+  </div>
 
   </main>
 </div>
 
 <script>
+  // ── Firebase config ──────────────────────────────────────────
+  // Replace these values with your own from Firebase Console →
+  // Project Settings → General → Your apps → SDK setup and configuration
+  const firebaseConfig = {
+    apiKey:            "AIzaSyBS9eG9uMhsRXRqgk4ufEeTj1LF6_3EpSQ",
+    authDomain:        "senticell-questionnaire.firebaseapp.com",
+    projectId:         "senticell-questionnaire",
+    storageBucket:     "senticell-questionnaire.firebasestorage.app",
+    messagingSenderId: "514586597482",
+    appId:             "1:514586597482:web:b6406753207bcf0331d213"
+  };
+
+  // Emails in this list see ALL submissions. Everyone else sees only their own.
+  const ADMIN_EMAILS = ['shyftrealitylabs@gmail.com', 'rushit.dani@gmail.com'];
+
+  let fbApp, auth, db, currentUser = null;
+
+  try {
+    fbApp = firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db   = firebase.firestore();
+
+    auth.onAuthStateChanged(user => {
+      currentUser = user;
+      if (user) {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('userBar').style.display = 'flex';
+        document.getElementById('userEmailTag').textContent = user.email;
+        if (ADMIN_EMAILS.includes(user.email)) {
+          document.getElementById('adminPill').style.display = 'inline-block';
+        }
+      } else {
+        document.getElementById('loginOverlay').style.display = 'flex';
+        document.getElementById('userBar').style.display = 'none';
+        document.getElementById('adminPill').style.display = 'none';
+      }
+    });
+  } catch(e) {
+    console.warn('Firebase not configured yet:', e.message);
+  }
+
+  // ── Auth helpers ─────────────────────────────────────────────
+  let authMode = 'signin';
+
+  function handleAuth() {
+    const email    = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    const errEl    = document.getElementById('loginError');
+    const btn      = document.getElementById('authBtn');
+    if (!email || !password) { showAuthError('Please enter your email and password.'); return; }
+    btn.disabled = true;
+    btn.textContent = authMode === 'signin' ? 'Signing in…' : 'Creating account…';
+    errEl.style.display = 'none';
+    const p = authMode === 'signin'
+      ? auth.signInWithEmailAndPassword(email, password)
+      : auth.createUserWithEmailAndPassword(email, password);
+    p.catch(err => {
+      showAuthError(friendlyAuthError(err.code));
+      btn.disabled = false;
+      btn.textContent = authMode === 'signin' ? 'Sign in' : 'Create account';
+    });
+  }
+
+  function showAuthError(msg) {
+    const el = document.getElementById('loginError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function friendlyAuthError(code) {
+    return ({
+      'auth/user-not-found':      'No account found with this email.',
+      'auth/wrong-password':      'Incorrect password.',
+      'auth/invalid-credential':  'Incorrect email or password.',
+      'auth/invalid-email':       'Please enter a valid email address.',
+      'auth/email-already-in-use':'An account with this email already exists.',
+      'auth/weak-password':       'Password must be at least 6 characters.',
+      'auth/too-many-requests':   'Too many attempts — please try again later.',
+    })[code] || 'Something went wrong. Please try again.';
+  }
+
+  function toggleAuthMode() {
+    authMode = authMode === 'signin' ? 'signup' : 'signin';
+    document.getElementById('authModeTitle').textContent   = authMode === 'signin' ? 'Sign in to continue' : 'Create your account';
+    document.getElementById('authBtn').textContent         = authMode === 'signin' ? 'Sign in' : 'Create account';
+    document.getElementById('authToggleText').innerHTML    = authMode === 'signin'
+      ? 'Don\'t have an account? <a href="#" onclick="toggleAuthMode();return false;">Create one</a>'
+      : 'Already have an account? <a href="#" onclick="toggleAuthMode();return false;">Sign in</a>';
+    document.getElementById('loginError').style.display = 'none';
+  }
+
+  function doSignOut() { auth && auth.signOut(); }
+
+  // ── View toggle ───────────────────────────────────────────────
+  function showHistory() {
+    document.getElementById('formMain').style.display    = 'none';
+    document.getElementById('historyMain').style.display = 'block';
+    document.getElementById('navHistory').classList.add('active');
+    document.getElementById('navFormLink').classList.remove('active');
+    loadHistory();
+  }
+
+  function showForm() {
+    document.getElementById('formMain').style.display    = 'block';
+    document.getElementById('historyMain').style.display = 'none';
+    document.getElementById('navHistory').classList.remove('active');
+  }
+
+  // ── History ───────────────────────────────────────────────────
+  async function loadHistory() {
+    const container = document.getElementById('historyContainer');
+    const subtitle  = document.getElementById('historySubtitle');
+    if (!db || !currentUser) {
+      container.innerHTML = '<p style="color:var(--danger);font-size:14px;">Firebase is not configured yet.</p>';
+      return;
+    }
+    const isAdmin = ADMIN_EMAILS.includes(currentUser.email);
+    subtitle.textContent = isAdmin ? 'All submissions (admin view)' : 'Your submissions';
+    container.innerHTML  = '<p style="color:var(--ink-3);font-size:14px;">Loading…</p>';
+
+    try {
+      let q = db.collection('submissions').orderBy('submittedAt', 'desc');
+      if (!isAdmin) q = q.where('userId', '==', currentUser.uid);
+      const snap = await q.get();
+
+      if (snap.empty) {
+        container.innerHTML = '<p style="color:var(--ink-3);font-size:14px;padding:0.5rem 0;">No submissions yet.</p>';
+        return;
+      }
+      container.innerHTML = '';
+      snap.forEach(doc => {
+        const d    = doc.data();
+        const date = d.submittedAt?.toDate
+          ? d.submittedAt.toDate().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+          : 'Unknown date';
+        const initials = (d.email || '?').slice(0,2).toUpperCase();
+        const card = document.createElement('div');
+        card.className = 'submission-card';
+        card.innerHTML = `
+          <div class="submission-head" onclick="this.nextElementSibling.classList.toggle('open')">
+            <div class="submission-avatar">${initials}</div>
+            <div class="submission-info">
+              <div class="submission-by">${d.pocName || d.email}</div>
+              <div class="submission-meta">${d.email} · ${date}</div>
+            </div>
+            <span style="color:var(--ink-3);font-size:18px;line-height:1;">&#8964;</span>
+          </div>
+          <div class="submission-body">
+            <textarea class="submission-text" readonly>${d.summary || ''}</textarea>
+          </div>`;
+        container.appendChild(card);
+      });
+    } catch(err) {
+      container.innerHTML = '<p style="color:var(--danger);font-size:14px;">Error loading history: ' + err.message + '</p>';
+    }
+  }
+
   let memberCount = 0;
 
   // Toggle sections
@@ -1216,9 +1482,36 @@
 
     document.getElementById('outputText').value = out;
     document.getElementById('outputBox').style.display = 'block';
+    document.getElementById('sendStatus').textContent = '';
+    const sendBtn = document.getElementById('confirmSendBtn');
+    sendBtn.disabled = false;
+    sendBtn.style.opacity = '';
+    sendBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Confirm &amp; send to team';
     document.getElementById('outputBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
+  function confirmSend() {
+    const sendBtn = document.getElementById('confirmSendBtn');
+    const status = document.getElementById('sendStatus');
     const pocName = document.getElementById('pocName').value || 'A client';
+    const out = document.getElementById('outputText').value;
+
+    sendBtn.disabled = true;
+    sendBtn.style.opacity = '0.6';
+    sendBtn.textContent = 'Sending…';
+    status.innerHTML = '';
+
+    // Save to Firestore (best effort — doesn't block the email send)
+    if (db && currentUser) {
+      db.collection('submissions').add({
+        userId: currentUser.uid,
+        email: currentUser.email,
+        pocName,
+        summary: out,
+        submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(e => console.warn('Firestore save failed:', e));
+    }
+
     fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -1232,14 +1525,24 @@
     .then(r => r.json())
     .then(data => {
       if (data.success) {
-        const note = document.createElement('p');
-        note.style.cssText = 'color:#0f7b55;font-size:13px;margin-top:12px;';
-        note.textContent = '✓ Responses also sent to rushit.dani@gmail.com';
-        const box = document.getElementById('outputBox');
-        if (!box.querySelector('.sent-note')) { note.className = 'sent-note'; box.appendChild(note); }
+        sendBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Sent!';
+        sendBtn.style.background = 'var(--success)';
+        sendBtn.style.boxShadow = '0 4px 16px rgba(15,123,85,0.35)';
+        sendBtn.style.opacity = '1';
+        status.innerHTML = '<span style="color:#0f7b55;">✓ Responses sent to shyftrealitylabs@gmail.com</span>';
+      } else {
+        sendBtn.disabled = false;
+        sendBtn.style.opacity = '1';
+        sendBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Retry send';
+        status.innerHTML = '<span style="color:#c0392b;">Send failed — please try again or copy the summary manually.</span>';
       }
     })
-    .catch(() => {});
+    .catch(() => {
+      sendBtn.disabled = false;
+      sendBtn.style.opacity = '1';
+      sendBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Retry send';
+      status.innerHTML = '<span style="color:#c0392b;">Network error — please check your connection and try again.</span>';
+    });
   }
 
   function copyOutput() {
@@ -1328,16 +1631,18 @@
     }
   }
 
-  // Scroll spy
-  const sections = ['sec1','sec2','sec3','sec6'];
+  // Scroll spy — only affects section nav items, not History/Fill-form links
+  const sections    = ['sec1','sec2','sec3','sec6'];
+  const sectionNavs = ['navSec1','navSec2','navSec3','navSec4'];
   window.addEventListener('scroll', () => {
-    let current = 'sec1';
-    sections.forEach(id => {
+    if (document.getElementById('historyMain').style.display === 'block') return;
+    let current = 0;
+    sections.forEach((id, i) => {
       const el = document.getElementById(id);
-      if (el && el.getBoundingClientRect().top < 120) current = id;
+      if (el && el.getBoundingClientRect().top < 120) current = i;
     });
-    document.querySelectorAll('.nav-item').forEach((item, i) => {
-      item.classList.toggle('active', sections[i] === current);
+    sectionNavs.forEach((navId, i) => {
+      document.getElementById(navId)?.classList.toggle('active', i === current);
     });
   });
 
