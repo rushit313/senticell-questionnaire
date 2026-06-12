@@ -744,6 +744,16 @@
   .nav-item.history-nav { background: var(--bg); }
   .nav-item.history-nav.active { background: var(--ink); color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
 
+  /* Review workflow */
+  .review-status-badge { font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; padding:4px 10px; border-radius:50px; }
+  .review-pending   { background:#fff8e1; color:#c77700; border:1px solid #f5c842; }
+  .review-approved  { background:var(--success-bg); color:var(--success); border:1px solid #a8dfc8; }
+  .review-changes   { background:var(--danger-bg); color:var(--danger); border:1px solid #f5b9b4; }
+  .review-upload-zone { border:2px dashed var(--line-2); border-radius:var(--radius); padding:1.25rem; margin-top:1rem; background:var(--bg); }
+  .review-creative-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; margin:10px 0; }
+  .review-creative-thumb { border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-sm); background:var(--line); aspect-ratio:1/1; }
+  .review-creative-thumb img { width:100%; height:100%; object-fit:cover; }
+
   /* Form type landing */
   #formLanding { display:none; }
   #socialMain  { display:none; }
@@ -862,16 +872,13 @@
     </div>
     <div id="sectionNavSM" style="display:none">
       <a class="nav-item active" id="navSMSec1" href="#smSec1">
-        <span class="nav-dot">1</span> Platforms
+        <span class="nav-dot">1</span> This month
       </a>
       <a class="nav-item" id="navSMSec2" href="#smSec2">
-        <span class="nav-dot">2</span> Content pieces
+        <span class="nav-dot">2</span> Content briefs
       </a>
       <a class="nav-item" id="navSMSec3" href="#smSec3">
-        <span class="nav-dot">3</span> Tone & brand
-      </a>
-      <a class="nav-item" id="navSMSec4" href="#smSec4">
-        <span class="nav-dot">4</span> Timeline
+        <span class="nav-dot">3</span> Timeline
       </a>
     </div>
   </nav>
@@ -1177,7 +1184,7 @@
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="1.8"/><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M8.7 10.7l6.6-4M8.7 13.3l6.6 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </div>
         <div class="ftc-title">Social Media</div>
-        <div class="ftc-desc">Captions, visuals, hashtags, and tone guidelines for LinkedIn, Instagram, Twitter/X, and more.</div>
+        <div class="ftc-desc">Share your topic, message, and format for each post. Our team designs the creatives and shares them back for your approval.</div>
         <div class="ftc-arrow">Start form <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div>
     </div>
@@ -1193,30 +1200,39 @@
 
     <div class="hero" style="background:linear-gradient(135deg,rgba(80,20,120,0.85) 0%,rgba(40,5,80,0.80) 100%),url('https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=1920&auto=format&fit=crop&q=80') center/cover no-repeat;margin-bottom:1.5rem;">
       <div class="hero-inner">
-        <div class="hero-eyebrow">Social media content collection</div>
-        <h1>Social Media —<br><em>content brief</em></h1>
-        <p>Tell us which platforms you need content for, what posts you want, and the tone to match your brand. Takes about 10–15 minutes.</p>
+        <div class="hero-eyebrow">Social media content brief</div>
+        <h1>Tell us what you<br><em>want to post</em></h1>
+        <p>Share your topic, message, and format for each post. Our team at SHYFT X will design the creatives and share them back with you to review before publishing.</p>
       </div>
       <div class="hero-meta">
-        <div class="meta-item"><span>Senticell</span>Brand</div>
-        <div class="meta-item"><span>Social</span>Content</div>
-        <div class="meta-item"><span>10–15 min</span>Est. time</div>
+        <div class="meta-item"><span>LinkedIn &amp; Instagram</span>Platforms</div>
+        <div class="meta-item"><span>3–4 creatives</span>Per month</div>
+        <div class="meta-item"><span>7–10 days</span>Turnaround</div>
       </div>
     </div>
 
-    <!-- SM Section 1: Platforms & goal -->
+    <!-- SM Section 1: This month's brief -->
     <div class="form-section" id="smSec1">
       <div class="section-head open" onclick="toggleSection(this)">
         <div class="section-num">1</div>
         <div class="section-info">
-          <div class="section-title">Platforms & goal</div>
-          <div class="section-desc">Which platforms and what are you trying to achieve?</div>
+          <div class="section-title">This month's brief</div>
+          <div class="section-desc">Which platforms and what's the overall focus this month?</div>
         </div>
         <span class="section-chevron open">&#8964;</span>
       </div>
       <div class="section-body open">
+        <div style="background:var(--accent-light);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem;border-left:3px solid var(--accent);">
+          <div style="font-size:11px;font-weight:600;color:var(--accent);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Your monthly package</div>
+          <ul style="font-size:13px;color:var(--ink-2);line-height:2;padding-left:1.1rem;margin:0;">
+            <li>3–4 social media creatives per month</li>
+            <li>1 presentation editing session — maximum 10 slides</li>
+            <li>1 monthly call (Microsoft Teams or Google Meet) to finalise content</li>
+            <li>Delivery within 7–10 business days after brief approval</li>
+          </ul>
+        </div>
         <div class="field">
-          <label>Select platforms <span class="req">*</span> <span class="hint">Click to toggle</span></label>
+          <label>Platforms for this month <span class="req">*</span> <span class="hint">Click to select</span></label>
           <div class="platform-chips" id="smPlatformChips" style="margin-top:8px;">
             <span class="platform-chip" onclick="togglePlatformChip(this)" data-platform="LinkedIn">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
@@ -1226,62 +1242,35 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
               Instagram
             </span>
-            <span class="platform-chip" onclick="togglePlatformChip(this)" data-platform="Twitter / X">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              Twitter / X
-            </span>
-            <span class="platform-chip" onclick="togglePlatformChip(this)" data-platform="Facebook">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
-              Facebook
-            </span>
-            <span class="platform-chip" onclick="togglePlatformChip(this)" data-platform="TikTok">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.85a8.27 8.27 0 004.84 1.54V6.94a4.85 4.85 0 01-1.07-.25z"/></svg>
-              TikTok
-            </span>
-            <span class="platform-chip" onclick="togglePlatformChip(this)" data-platform="YouTube">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/></svg>
-              YouTube
-            </span>
           </div>
           <input type="hidden" id="smPlatforms">
         </div>
-        <div class="grid-2">
-          <div class="field">
-            <label>Primary content goal <span class="req">*</span></label>
-            <select id="smGoal">
-              <option value="">— Select —</option>
-              <option>Brand awareness</option>
-              <option>Product / feature launch</option>
-              <option>Team & culture highlight</option>
-              <option>Thought leadership</option>
-              <option>Event promotion</option>
-              <option>Engagement & community</option>
-              <option>Recruitment</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Posting frequency <span class="hint">per week</span></label>
-            <select id="smFrequency">
-              <option value="">— Select —</option>
-              <option>1–2 posts / week</option>
-              <option>3–4 posts / week</option>
-              <option>5+ posts / week</option>
-              <option>One-off campaign</option>
-              <option>As needed</option>
-            </select>
-          </div>
+        <div class="field">
+          <label>What's the overall focus this month?</label>
+          <select id="smGoal">
+            <option value="">— Select —</option>
+            <option>Brand &amp; company updates</option>
+            <option>Product / research highlight</option>
+            <option>Team &amp; culture</option>
+            <option>Event or announcement</option>
+            <option>Thought leadership / insights</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Any context for us this month? <span class="hint">Upcoming news, campaigns, themes we should know about</span></label>
+          <textarea id="smMonthContext" placeholder="e.g. We're attending a conference this month, want to build content around that…" style="min-height:70px"></textarea>
         </div>
       </div>
     </div>
 
-    <!-- SM Section 2: Content pieces -->
+    <!-- SM Section 2: Content briefs -->
     <div class="form-section" id="smSec2">
       <div class="section-head open" onclick="toggleSection(this)">
         <div class="section-num">2</div>
         <div class="section-info">
-          <div class="section-title">Content pieces</div>
-          <div class="section-desc">Add each post, reel, or story you need — one card per piece</div>
+          <div class="section-title">Content briefs</div>
+          <div class="section-desc">One card per post — tell us the topic, message, and format</div>
         </div>
         <span class="section-chevron open">&#8964;</span>
       </div>
@@ -1289,113 +1278,45 @@
         <div id="smPostsContainer"></div>
         <button class="add-member-btn" onclick="addSMPost()">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          Add content piece
+          Add another post brief
         </button>
       </div>
     </div>
 
-    <!-- SM Section 3: Tone & brand -->
+    <!-- SM Section 3: Timeline & contact -->
     <div class="form-section" id="smSec3">
       <div class="section-head" onclick="toggleSection(this)">
         <div class="section-num">3</div>
         <div class="section-info">
-          <div class="section-title">Tone & brand voice</div>
-          <div class="section-desc">How should the content sound and feel?</div>
-        </div>
-        <span class="section-chevron">&#8964;</span>
-      </div>
-      <div class="section-body">
-        <div class="field">
-          <label>Voice / tone <span class="req">*</span></label>
-          <div class="radio-group" id="smToneGroup">
-            <label class="radio-item" onclick="selectRadio(this,'smToneGroup')">
-              <input type="radio" name="smTone" value="Professional & authoritative">
-              <span class="radio-box"></span>
-              <span class="radio-text">Professional &amp; authoritative</span>
-            </label>
-            <label class="radio-item" onclick="selectRadio(this,'smToneGroup')">
-              <input type="radio" name="smTone" value="Friendly & approachable">
-              <span class="radio-box"></span>
-              <span class="radio-text">Friendly &amp; approachable</span>
-            </label>
-            <label class="radio-item" onclick="selectRadio(this,'smToneGroup')">
-              <input type="radio" name="smTone" value="Inspiring & motivational">
-              <span class="radio-box"></span>
-              <span class="radio-text">Inspiring &amp; motivational</span>
-            </label>
-            <label class="radio-item" onclick="selectRadio(this,'smToneGroup')">
-              <input type="radio" name="smTone" value="Educational & informative">
-              <span class="radio-box"></span>
-              <span class="radio-text">Educational &amp; informative</span>
-            </label>
-            <label class="radio-item" onclick="selectRadio(this,'smToneGroup')">
-              <input type="radio" name="smTone" value="Witty & playful">
-              <span class="radio-box"></span>
-              <span class="radio-text">Witty &amp; playful</span>
-            </label>
-          </div>
-        </div>
-        <div class="grid-2">
-          <div class="field">
-            <label>Reference accounts <span class="hint">Accounts whose style you like</span></label>
-            <input type="text" id="smRefAccounts" placeholder="@example1, @example2">
-          </div>
-          <div class="field">
-            <label>Brand hashtags <span class="hint">Consistent tags to always include</span></label>
-            <input type="text" id="smBrandHashtags" placeholder="#senticell #biotech">
-          </div>
-        </div>
-        <div class="grid-2">
-          <div class="field">
-            <label>Content do's <span class="hint">Things to always include or say</span></label>
-            <textarea id="smDos" placeholder="Use data and evidence, mention Senticell.bio…" style="min-height:80px"></textarea>
-          </div>
-          <div class="field">
-            <label>Content don'ts <span class="hint">Things to avoid</span></label>
-            <textarea id="smDonts" placeholder="Avoid overly technical jargon, no competitor names…" style="min-height:80px"></textarea>
-          </div>
-        </div>
-        <div class="field">
-          <label>Additional brand notes <span class="hint">Colours, language, anything else</span></label>
-          <textarea id="smBrandNotes" placeholder="Red and white colour palette, always capitalise Senticell…"></textarea>
-        </div>
-      </div>
-    </div>
-
-    <!-- SM Section 4: Timeline & contact -->
-    <div class="form-section" id="smSec4">
-      <div class="section-head" onclick="toggleSection(this)">
-        <div class="section-num">4</div>
-        <div class="section-info">
           <div class="section-title">Timeline & contact</div>
-          <div class="section-desc">Deadlines and who to reach if we have questions</div>
+          <div class="section-desc">When do you need the creatives, and who should we contact?</div>
         </div>
         <span class="section-chevron">&#8964;</span>
       </div>
       <div class="section-body">
         <div class="grid-2">
           <div class="field">
-            <label>Content-ready deadline <span class="req">*</span></label>
+            <label>When do you need the creatives by? <span class="req">*</span></label>
             <input type="date" id="smDeadline">
           </div>
           <div class="field">
-            <label>First post go-live date</label>
+            <label>Planned go-live / posting date</label>
             <input type="date" id="smGolive">
           </div>
         </div>
         <div class="grid-2">
           <div class="field">
-            <label>Point of contact — name</label>
+            <label>Your name</label>
             <input type="text" id="smPocName" placeholder="Your full name">
           </div>
           <div class="field">
-            <label>Point of contact — email</label>
-            <input type="email" id="smPocEmail" placeholder="you@example.com">
+            <label>Your email</label>
+            <input type="email" id="smPocEmail" placeholder="you@senticell.bio">
           </div>
         </div>
         <div class="field">
-          <label>Other notes</label>
-          <textarea id="smOtherNotes" placeholder="Anything else we should know…"></textarea>
+          <label>Anything else we should know?</label>
+          <textarea id="smOtherNotes" placeholder="Any last notes before we start designing…"></textarea>
         </div>
       </div>
     </div>
@@ -1407,7 +1328,7 @@
           <svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M8 1l7 3.5-7 3.5-7-3.5z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M15 4.5V12M1 4.5L8 8v7" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Generate summary
         </button>
-        <p style="font-size:12px;color:var(--ink-3);margin-top:8px;">Review the summary below before sending to the team.</p>
+        <p style="font-size:12px;color:var(--ink-3);margin-top:8px;">Review the summary below before sending to SHYFT X.</p>
       </div>
     </div>
 
@@ -1418,7 +1339,7 @@
         <div style="margin-top:1rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
           <button class="btn-primary" id="smConfirmSendBtn" onclick="confirmSendSocial()" style="font-size:13px;padding:9px 18px;">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Confirm &amp; send to team
+            Confirm &amp; send to SHYFT X
           </button>
           <button class="btn-secondary" onclick="submitSocialForm()" style="font-size:13px;padding:9px 18px;">Re-generate</button>
         </div>
@@ -1659,12 +1580,11 @@
     let smBodyHtml = '';
     if (d.formType === 'socialMedia' && sd.posts) {
       const smMeta = [
-        sd.platforms  && ['Platforms',  sd.platforms],
-        sd.goal       && ['Goal',       sd.goal],
-        sd.frequency  && ['Frequency',  sd.frequency],
-        sd.tone       && ['Tone',       sd.tone],
-        sd.deadline   && ['Deadline',   sd.deadline],
-        sd.pocEmail   && ['Contact',    sd.pocEmail],
+        sd.platforms    && ['Platforms',  sd.platforms],
+        sd.goal         && ['Focus',      sd.goal],
+        sd.monthContext && ['Context',    sd.monthContext],
+        sd.deadline     && ['Deadline',   sd.deadline],
+        sd.pocEmail     && ['Contact',    sd.pocEmail],
       ].filter(Boolean);
       const smMetaHtml = smMeta.length ? `<div style="margin-bottom:1.25rem;">
         <div style="font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;">Overview</div>
@@ -1680,9 +1600,9 @@
           return `<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);align-items:flex-start;">
             ${thumb}
             <div style="flex:1;min-width:0;">
-              <div style="font-size:13px;font-weight:500;color:var(--ink);">${[p.platform,p.type].filter(Boolean).join(' · ') || 'Piece ' + (i+1)}</div>
-              ${p.caption ? `<div style="font-size:12px;color:var(--ink-2);margin-top:3px;line-height:1.5;white-space:pre-wrap;">${p.caption.slice(0,140)}${p.caption.length>140?'…':''}</div>` : ''}
-              ${p.hashtags ? `<div style="font-size:11px;color:var(--accent);margin-top:3px;">${p.hashtags}</div>` : ''}
+              <div style="font-size:13px;font-weight:500;color:var(--ink);">${[p.platform,p.type].filter(Boolean).join(' · ') || 'Post ' + (i+1)}</div>
+              ${p.topic ? `<div style="font-size:12px;font-weight:500;color:var(--ink-2);margin-top:2px;">${p.topic}</div>` : ''}
+              ${p.caption ? `<div style="font-size:12px;color:var(--ink-3);margin-top:3px;line-height:1.5;white-space:pre-wrap;">${p.caption.slice(0,120)}${p.caption.length>120?'…':''}</div>` : ''}
             </div>
           </div>`;
         }).join('')}
@@ -1696,12 +1616,72 @@
       : `<textarea class="submission-text" readonly>${d.summary || ''}</textarea>`;
 
     const isWebsite = !d.formType || d.formType === 'website';
+    const isAdmin   = ADMIN_EMAILS.includes(currentUser?.email || '');
     const badgeHtml = d.formType === 'socialMedia'
       ? `<span class="form-type-badge badge-social">Social</span>`
       : `<span class="form-type-badge badge-website">Website</span>`;
+
+    // Review status badge
+    let reviewBadge = '';
+    if (d.formType === 'socialMedia') {
+      if      (d.reviewStatus === 'approved')          reviewBadge = `<span class="review-status-badge review-approved" style="margin-left:6px;">✓ Approved</span>`;
+      else if (d.reviewStatus === 'changes_requested') reviewBadge = `<span class="review-status-badge review-changes"  style="margin-left:6px;">Changes requested</span>`;
+      else if (d.reviewStatus === 'pending')           reviewBadge = `<span class="review-status-badge review-pending"   style="margin-left:6px;">Review pending</span>`;
+    }
+
     const reopenBtn = isWebsite
       ? `<button class="btn-primary" style="font-size:13px;padding:9px 18px;" onclick="loadSubmissionIntoForm('${docId}')">✎ Re-open in form</button>`
       : `<button class="btn-primary" style="font-size:13px;padding:9px 18px;" onclick="loadSocialSubmission('${docId}')">✎ Re-open in form</button>`;
+
+    // Admin: upload creative panel
+    const uploadCreativeBtn = (!isWebsite && isAdmin && d.reviewStatus !== 'approved')
+      ? `<button class="btn-secondary" style="font-size:13px;padding:9px 18px;" onclick="toggleUploadCreativePanel('${docId}')">↑ Upload creative</button>
+         <div id="uploadCreativePanel-${docId}" class="review-upload-zone" style="display:none;">
+           <div style="font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:10px;">Upload finished creative for client to review</div>
+           <div style="border:1.5px dashed var(--line-2);border-radius:var(--radius);padding:10px;background:var(--surface);cursor:pointer;font-size:13px;color:var(--ink-3);" onclick="document.getElementById('creativeFile-${docId}').click()">
+             Click to upload image
+             <input type="file" id="creativeFile-${docId}" accept="image/*" style="display:none">
+           </div>
+           <textarea id="creativeNote-${docId}" placeholder="Add a note for the client (optional)…" style="width:100%;margin-top:8px;padding:8px 10px;font-size:13px;border:1.5px solid var(--line);border-radius:var(--radius);font-family:var(--font-body);resize:vertical;min-height:60px;background:var(--surface);color:var(--ink);"></textarea>
+           <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+             <button class="btn-primary" style="font-size:13px;padding:8px 16px;" onclick="submitCreativeUpload('${docId}')">Send for review</button>
+             <span id="creativeUploadStatus-${docId}" style="font-size:12px;color:var(--ink-3);"></span>
+           </div>
+         </div>` : '';
+
+    // Client: review panel (when creative is uploaded)
+    const creatives = d.creatives || [];
+    let clientReviewPanel = '';
+    if (!isWebsite && !isAdmin && creatives.length && d.reviewStatus === 'pending') {
+      const thumbs = creatives.filter(c => c.url).map(c =>
+        `<div class="review-creative-thumb"><img src="${c.url}" alt="creative" onerror="this.parentElement.style.display='none'"></div>`
+      ).join('');
+      const notes = creatives.filter(c => c.note).map(c =>
+        `<p style="font-size:13px;color:var(--ink-2);margin:4px 0;">${c.note}</p>`
+      ).join('');
+      clientReviewPanel = `<div style="margin-top:1rem;padding:1rem;background:var(--surface);border-radius:var(--radius);border:1.5px solid var(--line);">
+        <div style="font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;">Your creative is ready — please review</div>
+        ${thumbs ? `<div class="review-creative-grid">${thumbs}</div>` : ''}
+        ${notes}
+        <textarea id="reviewComment-${docId}" placeholder="If you need changes, describe them here…" style="width:100%;margin-top:10px;padding:8px 10px;font-size:13px;border:1.5px solid var(--line);border-radius:var(--radius);font-family:var(--font-body);resize:vertical;min-height:60px;background:var(--bg);color:var(--ink);"></textarea>
+        <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+          <button class="btn-primary" style="font-size:13px;padding:9px 18px;background:var(--success);box-shadow:0 4px 14px rgba(15,123,85,0.25);" onclick="submitClientReview('${docId}','approved')">✓ Approve</button>
+          <button class="btn-secondary" style="font-size:13px;padding:9px 18px;border-color:var(--danger);color:var(--danger);" onclick="submitClientReview('${docId}','changes_requested')">Request changes</button>
+        </div>
+      </div>`;
+    }
+    // Show previously uploaded creatives if approved / changes requested
+    if (!isWebsite && creatives.length && d.reviewStatus && d.reviewStatus !== 'pending') {
+      const thumbs = creatives.filter(c => c.url).map(c =>
+        `<div class="review-creative-thumb"><img src="${c.url}" alt="creative" onerror="this.parentElement.style.display='none'"></div>`
+      ).join('');
+      const comment = d.reviewComment ? `<p style="font-size:13px;color:var(--ink-2);margin-top:6px;font-style:italic;">"${d.reviewComment}"</p>` : '';
+      clientReviewPanel = `<div style="margin-top:1rem;padding:1rem;background:var(--surface);border-radius:var(--radius);border:1.5px solid var(--line);">
+        <div style="font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px;">Creative</div>
+        ${thumbs ? `<div class="review-creative-grid">${thumbs}</div>` : ''}
+        ${comment}
+      </div>`;
+    }
 
     const card = document.createElement('div');
     card.className = 'submission-card';
@@ -1712,14 +1692,16 @@
           <div class="submission-by">${d.pocName || d.email}</div>
           <div class="submission-meta">${d.email} · ${date}</div>
         </div>
-        ${badgeHtml}
+        ${badgeHtml}${reviewBadge}
         <span style="color:var(--ink-3);font-size:18px;line-height:1;margin-left:8px;">&#8964;</span>
       </div>
       <div class="submission-body">
         ${bodyContent}
+        ${clientReviewPanel}
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
           ${reopenBtn}
           <button class="btn-secondary" style="font-size:13px;padding:9px 18px;" onclick="copyTextById('${docId}')">Copy summary</button>
+          ${uploadCreativeBtn}
         </div>
       </div>`;
     return card;
@@ -1739,8 +1721,8 @@
     });
 
     // Section 1
-    if (sd.goal)      document.getElementById('smGoal').value      = sd.goal;
-    if (sd.frequency) document.getElementById('smFrequency').value = sd.frequency;
+    if (sd.goal)         document.getElementById('smGoal').value         = sd.goal;
+    if (sd.monthContext) document.getElementById('smMonthContext').value  = sd.monthContext;
 
     // Posts
     document.getElementById('smPostsContainer').innerHTML = '';
@@ -1748,25 +1730,14 @@
     (sd.posts || []).forEach(p => {
       addSMPost();
       const n = smPostCount;
-      if (p.platform)  document.getElementById('smp' + n + '-platform').value  = p.platform;
-      if (p.type)      document.getElementById('smp' + n + '-type').value      = p.type;
-      if (p.caption)   document.getElementById('smp' + n + '-caption').value   = p.caption;
-      if (p.hashtags)  document.getElementById('smp' + n + '-hashtags').value  = p.hashtags;
-      if (p.link)      document.getElementById('smp' + n + '-link').value      = p.link;
-      if (p.media)     document.getElementById('smp' + n + '-media').value     = p.media;
-      if (p.notes)     document.getElementById('smp' + n + '-notes').value     = p.notes;
+      if (p.platform) document.getElementById('smp' + n + '-platform').value = p.platform;
+      if (p.type)     document.getElementById('smp' + n + '-type').value     = p.type;
+      if (p.topic)    document.getElementById('smp' + n + '-topic').value    = p.topic;
+      if (p.caption)  document.getElementById('smp' + n + '-caption').value  = p.caption;
+      if (p.media)    document.getElementById('smp' + n + '-media').value    = p.media;
+      if (p.notes)    document.getElementById('smp' + n + '-notes').value    = p.notes;
       updateSMPostPreview(n);
     });
-
-    // Tone & brand
-    document.querySelectorAll('[name="smTone"]').forEach(r => {
-      r.closest('.radio-item').classList.toggle('selected', r.value === sd.tone);
-    });
-    if (sd.refAccounts)   document.getElementById('smRefAccounts').value   = sd.refAccounts;
-    if (sd.brandHashtags) document.getElementById('smBrandHashtags').value = sd.brandHashtags;
-    if (sd.dos)           document.getElementById('smDos').value           = sd.dos;
-    if (sd.donts)         document.getElementById('smDonts').value         = sd.donts;
-    if (sd.brandNotes)    document.getElementById('smBrandNotes').value    = sd.brandNotes;
 
     // Timeline
     if (sd.deadline)   document.getElementById('smDeadline').value   = sd.deadline;
@@ -1780,7 +1751,7 @@
     document.getElementById('smSendStatus').innerHTML = '';
     const btn = document.getElementById('smConfirmSendBtn');
     btn.disabled = false; btn.style.opacity = ''; btn.style.background = ''; btn.style.boxShadow = '';
-    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Confirm &amp; send to team';
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Confirm &amp; send to SHYFT X';
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -2268,6 +2239,57 @@
     }
   }
 
+  // ── Review workflow ───────────────────────────────────────────
+  function toggleUploadCreativePanel(docId) {
+    const panel = document.getElementById('uploadCreativePanel-' + docId);
+    if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  }
+
+  async function submitCreativeUpload(docId) {
+    const fileInput = document.getElementById('creativeFile-' + docId);
+    const noteInput = document.getElementById('creativeNote-' + docId);
+    const statusEl  = document.getElementById('creativeUploadStatus-' + docId);
+    const file = fileInput?.files?.[0];
+    const note = noteInput?.value || '';
+    if (!file && !note) { statusEl.textContent = 'Please upload a file or add a note.'; return; }
+    statusEl.textContent = 'Uploading…';
+    try {
+      let url = '';
+      if (file) url = await uploadToCloudinary(file);
+      await db.collection('submissions').doc(docId).update({
+        reviewStatus: 'pending',
+        creatives: firebase.firestore.FieldValue.arrayUnion({
+          url, note, uploadedAt: new Date().toISOString(), uploadedBy: currentUser.email
+        })
+      });
+      statusEl.innerHTML = '<span style="color:var(--success)">✓ Creative uploaded — client will see it in Submissions</span>';
+      fileInput.value = ''; noteInput.value = '';
+      submissionsCache.get(docId).reviewStatus = 'pending';
+      loadHistory();
+    } catch(e) {
+      statusEl.textContent = 'Upload failed: ' + e.message;
+    }
+  }
+
+  async function submitClientReview(docId, decision) {
+    const commentEl = document.getElementById('reviewComment-' + docId);
+    const comment   = commentEl?.value || '';
+    if (decision === 'changes_requested' && !comment.trim()) {
+      commentEl.style.border = '1.5px solid var(--danger)';
+      commentEl.placeholder  = 'Please describe what changes you need…';
+      commentEl.focus(); return;
+    }
+    try {
+      await db.collection('submissions').doc(docId).update({
+        reviewStatus: decision,
+        reviewComment: comment,
+        reviewedAt: new Date().toISOString(),
+        reviewedBy: currentUser.email
+      });
+      loadHistory();
+    } catch(e) { alert('Error: ' + e.message); }
+  }
+
   // ── Platform chips ────────────────────────────────────────────
   function togglePlatformChip(el) {
     el.classList.toggle('selected');
@@ -2290,7 +2312,7 @@
       <div class="sm-post-header">
         <div class="sm-post-badge">${n}</div>
         <div style="flex:1;min-width:0;">
-          <div class="sm-post-label">Content piece ${n}</div>
+          <div class="sm-post-label">Post brief ${n}</div>
           <div class="sm-post-preview" id="smp-preview-${n}">Fill in details below</div>
         </div>
         <button class="remove-member" onclick="removeSMPost(${n})">Remove</button>
@@ -2302,55 +2324,41 @@
             <option value="">— Select —</option>
             <option>LinkedIn</option>
             <option>Instagram</option>
-            <option>Twitter / X</option>
-            <option>Facebook</option>
-            <option>TikTok</option>
-            <option>YouTube</option>
-            <option>Multiple</option>
+            <option>Both</option>
           </select>
         </div>
         <div class="field">
-          <label>Content type <span class="req">*</span></label>
+          <label>Post format <span class="req">*</span></label>
           <select id="smp${n}-type" onchange="updateSMPostPreview(${n})">
             <option value="">— Select —</option>
-            <option>Static post / image</option>
+            <option>Static image / graphic</option>
             <option>Carousel / swipe</option>
-            <option>Reel / short video</option>
-            <option>Story</option>
             <option>Text-only post</option>
-            <option>Bio / profile update</option>
-            <option>Thread</option>
             <option>Other</option>
           </select>
         </div>
       </div>
       <div class="field">
-        <label>Caption / copy <span class="hint">Write the post text or brief us on what it should say</span></label>
-        <textarea id="smp${n}-caption" placeholder="Write the caption here, or describe the key message you want to convey…" style="min-height:90px"></textarea>
-      </div>
-      <div class="grid-2">
-        <div class="field">
-          <label>Hashtags <span class="hint">For this post specifically</span></label>
-          <input type="text" id="smp${n}-hashtags" placeholder="#biotech #senticell #cellbiology">
-        </div>
-        <div class="field">
-          <label>Link to include <span class="hint">Optional URL</span></label>
-          <input type="url" id="smp${n}-link" placeholder="https://senticell.bio/...">
-        </div>
+        <label>Topic / subject <span class="req">*</span> <span class="hint">What is this post about — one line</span></label>
+        <input type="text" id="smp${n}-topic" placeholder="e.g. Announcing our new diagnostic technology launch">
       </div>
       <div class="field">
-        <label>Visual / media <span class="hint">Upload an image or describe what you need</span></label>
+        <label>Key message &amp; content <span class="hint">What should the post say? Share the raw text, facts, or talking points — our team will craft the final copy</span></label>
+        <textarea id="smp${n}-caption" placeholder="e.g. We are excited to announce X… Key stat: 95% accuracy… Call to action: visit senticell.bio… Include Dr. Smith's quote: '…'" style="min-height:100px"></textarea>
+      </div>
+      <div class="field">
+        <label>Reference image or asset <span class="hint">Upload a photo, logo, or file to use — or describe the visual you want</span></label>
         <div style="border:1.5px dashed var(--line-2);border-radius:var(--radius);padding:10px 14px;background:var(--bg);display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="document.getElementById('smp${n}-mediafile').click()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="color:var(--ink-3);flex-shrink:0"><path d="M12 4v12M6 10l6-6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          <span id="smp${n}-medialabel" style="font-size:13px;color:var(--ink-3);">Click to upload image / video</span>
-          <input type="file" id="smp${n}-mediafile" accept="image/*,video/*" style="display:none" onchange="uploadSMMedia(${n},this)">
+          <span id="smp${n}-medialabel" style="font-size:13px;color:var(--ink-3);">Click to upload image / file</span>
+          <input type="file" id="smp${n}-mediafile" accept="image/*" style="display:none" onchange="uploadSMMedia(${n},this)">
         </div>
         <div id="smp${n}-mediastatus" style="font-size:12px;margin-top:4px;"></div>
-        <input type="text" id="smp${n}-media" placeholder="or describe: 'team photo with lab background', 'infographic about X'" style="margin-top:6px">
+        <input type="text" id="smp${n}-media" placeholder="or describe: 'headshot of Dr. Smith', 'lab equipment photo', 'our logo on red background'" style="margin-top:6px">
       </div>
       <div class="field">
-        <label>Notes for this piece <span class="hint">Any specific instructions</span></label>
-        <input type="text" id="smp${n}-notes" placeholder="Post on Monday morning, tag @person, boost after 24h…">
+        <label>Any specific instructions <span class="hint">Post timing, people to tag, links to include, etc.</span></label>
+        <input type="text" id="smp${n}-notes" placeholder="e.g. Post Tuesday morning, tag CEO's LinkedIn, add link to research paper">
       </div>
     `;
     container.appendChild(div);
@@ -2393,25 +2401,19 @@
     document.querySelectorAll('.sm-post-card').forEach(card => {
       const id = card.id.replace('smpost-', '');
       const g  = s => document.getElementById('smp' + id + s)?.value || '';
-      posts.push({ platform: g('-platform'), type: g('-type'), caption: g('-caption'),
-        hashtags: g('-hashtags'), link: g('-link'), media: g('-media'), notes: g('-notes') });
+      posts.push({ platform: g('-platform'), type: g('-type'), topic: g('-topic'),
+        caption: g('-caption'), media: g('-media'), notes: g('-notes') });
     });
     return {
-      platforms:     document.getElementById('smPlatforms')?.value || '',
-      goal:          document.getElementById('smGoal')?.value || '',
-      frequency:     document.getElementById('smFrequency')?.value || '',
+      platforms:    document.getElementById('smPlatforms')?.value || '',
+      goal:         document.getElementById('smGoal')?.value || '',
+      monthContext: document.getElementById('smMonthContext')?.value || '',
       posts,
-      tone:          document.querySelector('[name="smTone"]:checked')?.value || '',
-      refAccounts:   document.getElementById('smRefAccounts')?.value || '',
-      brandHashtags: document.getElementById('smBrandHashtags')?.value || '',
-      dos:           document.getElementById('smDos')?.value || '',
-      donts:         document.getElementById('smDonts')?.value || '',
-      brandNotes:    document.getElementById('smBrandNotes')?.value || '',
-      deadline:      document.getElementById('smDeadline')?.value || '',
-      golive:        document.getElementById('smGolive')?.value || '',
-      pocName:       document.getElementById('smPocName')?.value || '',
-      pocEmail:      document.getElementById('smPocEmail')?.value || '',
-      otherNotes:    document.getElementById('smOtherNotes')?.value || '',
+      deadline:     document.getElementById('smDeadline')?.value || '',
+      golive:       document.getElementById('smGolive')?.value || '',
+      pocName:      document.getElementById('smPocName')?.value || '',
+      pocEmail:     document.getElementById('smPocEmail')?.value || '',
+      otherNotes:   document.getElementById('smOtherNotes')?.value || '',
     };
   }
 
@@ -2422,35 +2424,26 @@
     out += '║   SENTICELL — SOCIAL MEDIA CONTENT BRIEF    ║\n';
     out += '╚══════════════════════════════════════════════╝\n\n';
 
-    out += '━━ 1. PLATFORMS & GOAL ━━\n\n';
-    if (sd.platforms)  out += '  Platforms:  ' + sd.platforms + '\n';
-    if (sd.goal)       out += '  Goal:       ' + sd.goal + '\n';
-    if (sd.frequency)  out += '  Frequency:  ' + sd.frequency + '\n';
+    out += '━━ 1. THIS MONTH\'S BRIEF ━━\n\n';
+    if (sd.platforms)    out += '  Platforms:  ' + sd.platforms + '\n';
+    if (sd.goal)         out += '  Focus:      ' + sd.goal + '\n';
+    if (sd.monthContext) out += '  Context:    ' + sd.monthContext + '\n';
 
-    out += '\n━━ 2. CONTENT PIECES ━━\n';
+    out += '\n━━ 2. CONTENT BRIEFS ━━\n';
     if (!sd.posts.length) {
-      out += '\n  (No content pieces added)\n';
+      out += '\n  (No posts added)\n';
     }
     sd.posts.forEach((p, i) => {
-      out += '\n  ─ Piece ' + (i + 1) + ' ─\n';
-      if (p.platform)  out += '    Platform:  ' + p.platform + '\n';
-      if (p.type)      out += '    Type:      ' + p.type + '\n';
-      if (p.caption)   out += '    Caption:   ' + p.caption.replace(/\n/g, '\n               ') + '\n';
-      if (p.hashtags)  out += '    Hashtags:  ' + p.hashtags + '\n';
-      if (p.link)      out += '    Link:      ' + p.link + '\n';
-      if (p.media)     out += '    Visual:    ' + p.media + '\n';
-      if (p.notes)     out += '    Notes:     ' + p.notes + '\n';
+      out += '\n  ─ Post ' + (i + 1) + ' ─\n';
+      if (p.platform) out += '    Platform: ' + p.platform + '\n';
+      if (p.type)     out += '    Format:   ' + p.type + '\n';
+      if (p.topic)    out += '    Topic:    ' + p.topic + '\n';
+      if (p.caption)  out += '    Message:  ' + p.caption.replace(/\n/g, '\n              ') + '\n';
+      if (p.media)    out += '    Visual:   ' + p.media + '\n';
+      if (p.notes)    out += '    Notes:    ' + p.notes + '\n';
     });
 
-    out += '\n━━ 3. TONE & BRAND ━━\n\n';
-    if (sd.tone)          out += '  Voice/tone:        ' + sd.tone + '\n';
-    if (sd.refAccounts)   out += '  Reference accounts:' + sd.refAccounts + '\n';
-    if (sd.brandHashtags) out += '  Brand hashtags:    ' + sd.brandHashtags + '\n';
-    if (sd.dos)           out += '  Do\'s:              ' + sd.dos + '\n';
-    if (sd.donts)         out += '  Don\'ts:            ' + sd.donts + '\n';
-    if (sd.brandNotes)    out += '  Brand notes:       ' + sd.brandNotes + '\n';
-
-    out += '\n━━ 4. TIMELINE & CONTACT ━━\n\n';
+    out += '\n━━ 3. TIMELINE & CONTACT ━━\n\n';
     if (sd.deadline)   out += '  Deadline:  ' + sd.deadline + '\n';
     if (sd.golive)     out += '  Go-live:   ' + sd.golive + '\n';
     if (sd.pocName || sd.pocEmail) out += '  Contact:   ' + [sd.pocName, sd.pocEmail].filter(Boolean).join(' · ') + '\n';
@@ -2463,7 +2456,7 @@
     document.getElementById('smSendStatus').textContent = '';
     const btn = document.getElementById('smConfirmSendBtn');
     btn.disabled = false; btn.style.opacity = ''; btn.style.background = ''; btn.style.boxShadow = '';
-    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Confirm &amp; send to team';
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4 4 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Confirm &amp; send to SHYFT X';
     document.getElementById('smOutputBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -2521,9 +2514,9 @@
   // Scroll spy — website sections
   const sections    = ['sec1','sec2','sec3','sec6'];
   const sectionNavs = ['navSec1','navSec2','navSec3','navSec4'];
-  // Scroll spy — social media sections
-  const smSections    = ['smSec1','smSec2','smSec3','smSec4'];
-  const smSectionNavs = ['navSMSec1','navSMSec2','navSMSec3','navSMSec4'];
+  // Scroll spy — social media sections (3 only)
+  const smSections    = ['smSec1','smSec2','smSec3'];
+  const smSectionNavs = ['navSMSec1','navSMSec2','navSMSec3'];
 
   window.addEventListener('scroll', () => {
     const inHistory = document.getElementById('historyMain').style.display === 'block';
