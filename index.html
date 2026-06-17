@@ -1514,23 +1514,67 @@
     }
     container.innerHTML = '<p style="color:var(--ink-3);font-size:14px;">Loading…</p>';
     try {
-      const snap = await db.collection('users').orderBy('lastSeen', 'desc').get();
-      if (snap.empty) {
+      // Build a map of email → user data, seeded from submissions (backfill)
+      const userMap = new Map();
+
+      const subSnap = await db.collection('submissions').orderBy('submittedAt', 'desc').get();
+      subSnap.forEach(doc => {
+        const d = doc.data();
+        if (!d.email) return;
+        if (!userMap.has(d.email)) {
+          userMap.set(d.email, {
+            email:       d.email,
+            displayName: d.pocName || d.structuredData?.pocName || '',
+            lastSeen:    d.submittedAt || null,
+            firstSeen:   d.submittedAt || null,
+            fromSubmission: true,
+          });
+        }
+      });
+
+      // Overlay with proper users collection data (takes priority)
+      const usersSnap = await db.collection('users').get();
+      usersSnap.forEach(doc => {
+        const u = doc.data();
+        if (!u.email) return;
+        const existing = userMap.get(u.email) || {};
+        userMap.set(u.email, {
+          ...existing,
+          email:       u.email,
+          displayName: u.displayName || existing.displayName || '',
+          lastSeen:    u.lastSeen    || existing.lastSeen    || null,
+          firstSeen:   u.firstSeen   || existing.firstSeen   || null,
+          fromSubmission: false,
+        });
+      });
+
+      if (userMap.size === 0) {
         container.innerHTML = '<p style="color:var(--ink-3);font-size:14px;padding:0.5rem 0;">No users yet.</p>';
         return;
       }
+
+      // Sort by lastSeen descending
+      const sorted = [...userMap.values()].sort((a, b) => {
+        const ta = a.lastSeen?.toDate ? a.lastSeen.toDate() : new Date(0);
+        const tb = b.lastSeen?.toDate ? b.lastSeen.toDate() : new Date(0);
+        return tb - ta;
+      });
+
       container.innerHTML = '';
-      snap.forEach(doc => {
-        const u = doc.data();
+      sorted.forEach(u => {
         const name     = u.displayName || u.email.split('@')[0];
         const initials = name.slice(0,2).toUpperCase();
-        const lastSeen = u.lastSeen?.toDate
-          ? u.lastSeen.toDate().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
-          : '—';
+        const fmt = (ts) => ts?.toDate
+          ? ts.toDate().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+          : ts ? new Date(ts).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
+        const lastSeen  = fmt(u.lastSeen);
         const firstSeen = u.firstSeen?.toDate
           ? u.firstSeen.toDate().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
           : '—';
         const isAdminUser = ADMIN_EMAILS.includes(u.email);
+        const sourceTag   = u.fromSubmission
+          ? '<span style="font-size:10px;color:var(--ink-3);background:var(--bg);border:1px solid var(--line);border-radius:50px;padding:2px 7px;">via form</span>'
+          : '';
         const card = document.createElement('div');
         card.className = 'submission-card';
         card.style.marginBottom = '0.75rem';
@@ -1538,21 +1582,22 @@
           <div style="display:flex;align-items:center;gap:14px;padding:1rem 1.25rem;">
             <div class="submission-avatar">${initials}</div>
             <div style="flex:1;min-width:0;">
-              <div style="font-size:14px;font-weight:500;color:var(--ink);display:flex;align-items:center;gap:8px;">
+              <div style="font-size:14px;font-weight:500;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                 ${name}
                 ${isAdminUser ? '<span class="admin-pill" style="display:inline-block;">Admin</span>' : ''}
+                ${sourceTag}
               </div>
               <div style="font-size:12px;color:var(--ink-3);margin-top:2px;">${u.email}</div>
             </div>
             <div style="text-align:right;flex-shrink:0;">
               <div style="font-size:11px;color:var(--ink-3);">Last seen</div>
               <div style="font-size:12px;color:var(--ink-2);font-weight:500;">${lastSeen}</div>
-              <div style="font-size:11px;color:var(--ink-3);margin-top:4px;">Joined ${firstSeen}</div>
+              ${firstSeen !== '—' ? `<div style="font-size:11px;color:var(--ink-3);margin-top:4px;">Joined ${firstSeen}</div>` : ''}
             </div>
           </div>`;
         container.appendChild(card);
       });
-      document.getElementById('usersSubtitle').textContent = snap.size + ' user' + (snap.size === 1 ? '' : 's') + ' total';
+      document.getElementById('usersSubtitle').textContent = sorted.length + ' user' + (sorted.length === 1 ? '' : 's') + ' total';
     } catch(err) {
       container.innerHTML = '<p style="color:var(--danger);font-size:14px;">Error: ' + err.message + '</p>';
     }
