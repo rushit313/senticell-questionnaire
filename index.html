@@ -851,6 +851,9 @@
     <a class="nav-item history-nav" id="navHistory" href="#" onclick="showHistory();return false;">
       <span class="nav-dot" style="font-size:13px;">≡</span> Submissions
     </a>
+    <a class="nav-item history-nav" id="navUsers" href="#" onclick="showUsers();return false;" style="display:none;">
+      <span class="nav-dot" style="font-size:13px;">👤</span> Users
+    </a>
     <a class="nav-item" id="navFormLink" href="#" onclick="showFormLanding();return false;">
       <span class="nav-dot" style="font-size:13px;">✎</span> Fill form
     </a>
@@ -1156,6 +1159,20 @@
     </div>
   </div>
 
+  <!-- Users panel (admin only) -->
+  <div id="usersMain" style="display:none;">
+    <div class="history-header">
+      <div>
+        <h2>Users</h2>
+        <p id="usersSubtitle">Everyone who has logged into the app</p>
+      </div>
+      <button class="btn-secondary" onclick="loadUsers()" style="flex-shrink:0;">↺ Refresh</button>
+    </div>
+    <div id="usersContainer">
+      <p style="color:var(--ink-3);font-size:14px;padding:0.5rem 0;">Loading users…</p>
+    </div>
+  </div>
+
   <!-- Form type landing -->
   <div id="formLanding">
     <div class="hero" style="margin-bottom:1.5rem;">
@@ -1381,13 +1398,31 @@
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('userBar').style.display = 'flex';
         document.getElementById('userEmailTag').textContent = user.email;
-        if (ADMIN_EMAILS.includes(user.email)) {
+        const isAdmin = ADMIN_EMAILS.includes(user.email);
+        if (isAdmin) {
           document.getElementById('adminPill').style.display = 'inline-block';
+          document.getElementById('navUsers').style.display  = 'flex';
         }
+        // Record this login in the users collection
+        db.collection('users').doc(user.uid).set({
+          email:     user.email,
+          displayName: user.displayName || '',
+          lastSeen:  firebase.firestore.FieldValue.serverTimestamp(),
+        }, { merge: true }).then(() => {
+          // Set firstSeen only if not already set
+          db.collection('users').doc(user.uid).get().then(snap => {
+            if (!snap.data()?.firstSeen) {
+              db.collection('users').doc(user.uid).update({
+                firstSeen: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            }
+          });
+        }).catch(() => {});
       } else {
         document.getElementById('loginOverlay').style.display = 'flex';
         document.getElementById('userBar').style.display = 'none';
         document.getElementById('adminPill').style.display = 'none';
+        document.getElementById('navUsers').style.display  = 'none';
       }
     });
   } catch(e) {
@@ -1448,26 +1483,84 @@
 
   // ── View toggle ───────────────────────────────────────────────
   function _hideAll() {
-    ['formMain','historyMain','formLanding','socialMain'].forEach(id => {
+    ['formMain','historyMain','usersMain','formLanding','socialMain'].forEach(id => {
       document.getElementById(id).style.display = 'none';
     });
     document.getElementById('sectionNav').style.display   = 'none';
     document.getElementById('sectionNavSM').style.display = 'none';
     document.getElementById('sectionNavTitle').style.display = 'none';
+    ['navHistory','navUsers','navFormLink'].forEach(id => document.getElementById(id).classList.remove('active'));
   }
 
   function showHistory() {
     _hideAll();
     document.getElementById('historyMain').style.display = 'block';
     document.getElementById('navHistory').classList.add('active');
-    document.getElementById('navFormLink').classList.remove('active');
     loadHistory();
+  }
+
+  function showUsers() {
+    _hideAll();
+    document.getElementById('usersMain').style.display = 'block';
+    document.getElementById('navUsers').classList.add('active');
+    loadUsers();
+  }
+
+  async function loadUsers() {
+    const container = document.getElementById('usersContainer');
+    if (!db || !currentUser || !ADMIN_EMAILS.includes(currentUser.email)) {
+      container.innerHTML = '<p style="color:var(--danger);font-size:14px;">Admin access required.</p>';
+      return;
+    }
+    container.innerHTML = '<p style="color:var(--ink-3);font-size:14px;">Loading…</p>';
+    try {
+      const snap = await db.collection('users').orderBy('lastSeen', 'desc').get();
+      if (snap.empty) {
+        container.innerHTML = '<p style="color:var(--ink-3);font-size:14px;padding:0.5rem 0;">No users yet.</p>';
+        return;
+      }
+      container.innerHTML = '';
+      snap.forEach(doc => {
+        const u = doc.data();
+        const name     = u.displayName || u.email.split('@')[0];
+        const initials = name.slice(0,2).toUpperCase();
+        const lastSeen = u.lastSeen?.toDate
+          ? u.lastSeen.toDate().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+          : '—';
+        const firstSeen = u.firstSeen?.toDate
+          ? u.firstSeen.toDate().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+          : '—';
+        const isAdminUser = ADMIN_EMAILS.includes(u.email);
+        const card = document.createElement('div');
+        card.className = 'submission-card';
+        card.style.marginBottom = '0.75rem';
+        card.innerHTML = `
+          <div style="display:flex;align-items:center;gap:14px;padding:1rem 1.25rem;">
+            <div class="submission-avatar">${initials}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:14px;font-weight:500;color:var(--ink);display:flex;align-items:center;gap:8px;">
+                ${name}
+                ${isAdminUser ? '<span class="admin-pill" style="display:inline-block;">Admin</span>' : ''}
+              </div>
+              <div style="font-size:12px;color:var(--ink-3);margin-top:2px;">${u.email}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-size:11px;color:var(--ink-3);">Last seen</div>
+              <div style="font-size:12px;color:var(--ink-2);font-weight:500;">${lastSeen}</div>
+              <div style="font-size:11px;color:var(--ink-3);margin-top:4px;">Joined ${firstSeen}</div>
+            </div>
+          </div>`;
+        container.appendChild(card);
+      });
+      document.getElementById('usersSubtitle').textContent = snap.size + ' user' + (snap.size === 1 ? '' : 's') + ' total';
+    } catch(err) {
+      container.innerHTML = '<p style="color:var(--danger);font-size:14px;">Error: ' + err.message + '</p>';
+    }
   }
 
   function showFormLanding() {
     _hideAll();
     document.getElementById('formLanding').style.display = 'block';
-    document.getElementById('navHistory').classList.remove('active');
     document.getElementById('navFormLink').classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
